@@ -1,0 +1,88 @@
+
+
+.card{
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  box-shadow: 5px 5px 5px rgba(0, 0%, 0%, 0.1);
+  max-width: 250px;
+  margin: 10px;
+  padding: 10px;
+  text-align: center;
+
+
+}
+
+.card .card-image{
+  max-width: 80%;
+  height: auto;
+  border-radius: 10px;
+}
+
+.card .card-title{
+  font-family: 'Arial', sans-serif;
+  font-size: 20px;
+  font-weight: bold;
+  margin: 0;
+}
+
+.card .card-description{
+  font-family: 'Arial', sans-serif;
+  font-size: 15px;
+  color: hsl(0, 0%, 30%);
+  margin: 10px 0;
+}
+
+.cart{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: right;
+  margin-top: 20px;
+}
+
+.cart .cart-button{
+  background-color: hsl(0, 0%, 100%);
+  border: none;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+.cart .card-image{
+  height: auto;
+  width: 10px;
+  margin: 5px;
+  border: none;
+  border-radius: 1px;
+  cursor: 'pointer'
+
+}
+
+.cart .cart-title{
+  font-family: 'Arial', sans-serif;
+  font-size: 10px;
+  font-weight: bold;
+  margin: 0;
+}
+
+.Home{
+  text-align: center;
+}
+
+.Home .sign-up-button{
+  background-color: hwb(183 4% 19%);
+  border: none;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+
+
+
+
