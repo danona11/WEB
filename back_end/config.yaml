@@ -1,8 +1,0 @@
-app_name : "Football kits"
-secret: "3fjihdsiojrgfasjgafdgfod"
-database:
-  host: "localhost"
-  user: "postgres"
-  password: "danp7531"
-  db_name: "postgres"
-  port : 5432
