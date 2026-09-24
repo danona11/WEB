@@ -1,19 +1,16 @@
 package main
 
 import (
-
 	"my-project/controllers"
 	"my-project/initializers"
 	"my-project/middleware"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"os"
-	"github.com/joho/godotenv"
 )
 
 func main() {
 
-	
 	initializers.ConnectToDB()
 	initializers.Migrate()
 
@@ -29,7 +26,7 @@ func main() {
 		AllowOrigins:     []string{"*"}, //the react's address
 		AllowMethods:     []string{"POST", "GET", "OPTIONS", "PUT", "DELETE"},
 		AllowHeaders:     []string{"Origin", "Content-Type"},
-		AllowCredentials: true, 		//allows cookie saving in our server
+		AllowCredentials: true, //allows cookie saving in our server
 	}))
 
 	//routing:
