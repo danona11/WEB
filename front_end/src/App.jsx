@@ -13,7 +13,7 @@ import LoginPage from './LoginPage.jsx';
 export default function App() {
     return (
         <> 
-            <LoginPag1e/>
+            <LoginPage/>
             
         </>
         
