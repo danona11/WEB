@@ -1,2 +1,2 @@
-config.yaml
-back_end/config.yaml
+.env
+back_end/.env
