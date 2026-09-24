@@ -1,9 +1,10 @@
 import { Link, useNavigate } from "react-router-dom";
 
-import { use, useState } from "react";
+import { useState } from "react";
 
 
-function Register_page () {
+export default function LoginPage() {
+    
     const [email, setEmail] = useState()        //returns the email string and a setter func - will rerender when updated
     const [password, setPassword] = useState()  //returns the password string and the setter func
 
@@ -11,7 +12,7 @@ function Register_page () {
 //NAV: when pressing a button for fetching 
     const nav = useNavigate();  
 
-//when the user presses the login button thefunction will activate:
+//when the user presses the login button th efunction will activate:
     const handleLogin = async(event) => {   //async - allows await when fetching
         
         event.preventDefault();     //the page wont refresh when pressing login
@@ -49,9 +50,9 @@ function Register_page () {
         }
     }
     return (    
-        <div className="register-page" style={{textAlign: 'center', marginTop: '50px'}}>
+        <div className="login-page" style={{textAlign: 'center', marginTop: '50px'}}>
             <h1>Football Kits</h1>
-            <h3>Register</h3>
+            <h3>Log in</h3>
 
 {//comment:
             //will activate the handleLogin func:
@@ -63,8 +64,8 @@ function Register_page () {
 
                 <br></br>
 
-                <label>password:  </label>
-                <input type="password" value={password} onChange={ (event) => setEmail(event.target.value) }/>
+                <label>password: </label>
+                <input type="password" value={password} onChange={ (event) => setPassword(event.target.value) }/>
                         
                 <br></br>
                 <br></br>
@@ -75,11 +76,10 @@ function Register_page () {
             <br></br>
 
             <p> don't have an account? </p>
-            <Link to={"/sign_up_page"}>
+            <Link to={"/SignUpPage"}>
                 <button>Sign Up</button>
             </Link>
         </div>
     );
 }
 
-export default Register_page;

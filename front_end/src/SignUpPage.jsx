@@ -1,4 +1,4 @@
-export default function Sign_up_page() {
+export default function SignUpPage() {
 
     return(
         <div>

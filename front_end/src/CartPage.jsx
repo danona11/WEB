@@ -1,4 +1,4 @@
-export default function Cart_page(props) {
+export default function CartPage(props) {
 
     return (
         <>

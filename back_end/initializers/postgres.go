@@ -25,6 +25,9 @@ func initConfig() {
 	}
 }
 
+func init
+
+
 func ConnectToDB(){
 	
 	initConfig()
