@@ -36,9 +36,9 @@ func CreateUser(ctx *gin.Context) {
 	var newUser modules.User
 
 	err := ctx.BindJSON(&newUser)
-	if err != nil { //error
+	if err != nil {
 		ctx.JSON(http.StatusBadRequest,
-			gin.H{"error": "user info not valid"}) //gin.H{} = a maping function: keys[string] : value[interface/any]
+			gin.H{"error": "user info not valid"})
 
 		return
 	}
@@ -84,7 +84,7 @@ func UserById(ctx *gin.Context) {
 	User, err := GetUserById(uint(id))
 
 	if err != nil {
-		ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()}) //error
+		ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}
 	ctx.IndentedJSON(http.StatusOK, User)
@@ -97,7 +97,7 @@ func Login(ctx *gin.Context) {
 		Password string
 	}
 
-	err := ctx.Bind(&login_input) //will take the json from the front, and converts it to login_input type
+	err := ctx.Bind(&login_input) //will take the json from the front, and convert it to login_input type
 	if err != nil {               //if gin can't do the converstion it will show - StatusBadRequest
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "input not valid, please try again"})
 		return
@@ -151,12 +151,13 @@ func Register(ctx *gin.Context) {
 	}
 
 	err := ctx.Bind(&register_input)
-	if err != nil {
+	if err != nil { //couldnt bind into register_input
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "user details unaccesptable"})
 		return
 	}
 
-	hash, err := bcrypt.GenerateFromPassword([]byte(register_input.Password), 10)
+	//bcrypt will hash the users passwords in the db:
+	hash, err := bcrypt.GenerateFromPassword([]byte(register_input.Password), 10) //10 cost factor repressents how slow the hashing alg will be
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "failed to hash the password"})
 		return
@@ -168,7 +169,8 @@ func Register(ctx *gin.Context) {
 		Password:  string(hash)}
 
 	result := initializers.DB_ptr.Create(&newUser)
-	
+	//Note:need to check if user already exists
+
 	if result.Error != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "failed to register new user"})
 		return
@@ -179,17 +181,17 @@ func Register(ctx *gin.Context) {
 
 func Validate(ctx *gin.Context) {
 	// get the userData from the local memmory of the router
-	userData , exists := ctx.Get("user")
-	if exists != true{
-		ctx.JSON(http.StatusUnauthorized , gin.H{"error":"user dosn't have authintication"})
+	userData, exists := ctx.Get("user")
+	if exists != true {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "user dosn't have authintication"})
 		return
 	}
 	//from gin user type to DB user type:
 	user := userData.(modules.User)
 
 	ctx.JSON(http.StatusOK, gin.H{
-		"message": "user validated",
+		"message":   "user validated",
 		"user_name": user.User_name,
-		"email": user.Email,
+		"email":     user.Email,
 	})
 }

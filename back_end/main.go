@@ -11,6 +11,8 @@ import (
 
 func main() {
 
+	initializers.InitConfig()
+	initializers.LoadEnvVars()
 	initializers.ConnectToDB()
 	initializers.Migrate()
 
@@ -43,5 +45,5 @@ func main() {
 	}
 
 	//start the app:
-	router.Run("localhost:8080")
+	router.Run()
 }
