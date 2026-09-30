@@ -1,14 +1,13 @@
 package controllers
 
 import (
-	"errors"
-	"fmt"
+	//"errors"
+	//"fmt"
 	"my-project/initializers"
 	"my-project/modules"
 	"net/http"
-	"strconv"
+	//"strconv"
 	"time"
-
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/spf13/viper"
@@ -32,6 +31,8 @@ func GetRequests(ctx *gin.Context) { //gin.context = all the info about the requ
 
 }
 
+
+/*
 func CreateUser(ctx *gin.Context) {
 	var newUser modules.User
 
@@ -89,6 +90,8 @@ func UserById(ctx *gin.Context) {
 	}
 	ctx.IndentedJSON(http.StatusOK, User)
 }
+*/
+
 
 func Login(ctx *gin.Context) {
 
@@ -141,6 +144,7 @@ func Login(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"message": "cookie"})
 
 }
+
 
 func Register(ctx *gin.Context) {
 	var register_input struct {

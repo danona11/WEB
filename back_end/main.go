@@ -33,14 +33,21 @@ func main() {
 
 	//routing:
 	//open routes - no need for cookie or token
-	router.POST("/Register", controllers.Register)
-	router.POST("/Login", controllers.Login)
+	router.POST("/register", controllers.Register)
+	router.POST("/login", controllers.Login)
 
 	//protected routes - will activate requireAuth for all autherized requests
 	protectedRoutes := router.Group("/")
 	protectedRoutes.Use(middleware.RequireAuth)
 	{
-		protectedRoutes.GET("/Validate", controllers.Validate)
+		protectedRoutes.GET("/validate", controllers.Validate)
+
+		//Products Controllers:
+		protectedRoutes.POST("/products", controllers.CreateProduct)
+		protectedRoutes.GET("/products", controllers.ProductIndex)
+		protectedRoutes.GET("/products/:id", controllers.ShowProduct)
+		protectedRoutes.PUT("/products/:id", controllers.UpdateProduct)
+		protectedRoutes.DELETE("/products/:id", controllers.DeleteProduct)//prod wont be copltetley deleted, for callback reassons
 
 	}
 
