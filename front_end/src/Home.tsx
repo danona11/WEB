@@ -1,4 +1,4 @@
-import CartButton from './CartButton.jsx'
+import CartButton from './CartButton.js'
 
 export default function Home() {
     return (

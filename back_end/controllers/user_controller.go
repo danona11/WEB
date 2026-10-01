@@ -3,14 +3,15 @@ package controllers
 import (
 	//"errors"
 	//"fmt"
+	//"strconv"
 	"my-project/initializers"
 	"my-project/modules"
 	"net/http"
-	//"strconv"
+	"os"
 	"time"
+
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/spf13/viper"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -30,7 +31,6 @@ func GetRequests(ctx *gin.Context) { //gin.context = all the info about the requ
 	ctx.IndentedJSON(http.StatusOK, users_list)
 
 }
-
 
 /*
 func CreateUser(ctx *gin.Context) {
@@ -92,7 +92,6 @@ func UserById(ctx *gin.Context) {
 }
 */
 
-
 func Login(ctx *gin.Context) {
 
 	var login_input struct {
@@ -129,8 +128,7 @@ func Login(ctx *gin.Context) {
 		"subject":  login_user.User_id,
 		"exp_date": time.Now().Add(time.Minute * 30).Unix(),
 	})
-
-	secret := viper.GetString("secret")
+	secret := os.Getenv("secret")
 
 	// Sign in and get the complete encoded token as a string using the secret signature
 	tokenString, err := token.SignedString([]byte(secret))
@@ -145,8 +143,7 @@ func Login(ctx *gin.Context) {
 
 }
 
-
-func Register(ctx *gin.Context) {
+func SignUp(ctx *gin.Context) {
 	var register_input struct {
 		User_name   string
 		Email       string
@@ -160,7 +157,7 @@ func Register(ctx *gin.Context) {
 		return
 	}
 
-	//bcrypt will hash the users passwords in the db:
+	//bcrypt will hash the users passwords in the db: will generate a 22dig salt, and encrypt the password to a combined string of the both: (salt+hash)
 	hash, err := bcrypt.GenerateFromPassword([]byte(register_input.Password), 10) //10 cost factor repressents how slow the hashing alg will be
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "failed to hash the password"})

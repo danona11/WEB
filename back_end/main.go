@@ -33,7 +33,7 @@ func main() {
 
 	//routing:
 	//open routes - no need for cookie or token
-	router.POST("/register", controllers.Register)
+	router.POST("/signup", controllers.SignUp)
 	router.POST("/login", controllers.Login)
 
 	//protected routes - will activate requireAuth for all autherized requests

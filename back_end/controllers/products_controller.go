@@ -4,7 +4,6 @@ import (
 	"my-project/initializers"
 	"my-project/modules"
 	"net/http"
-
 	"github.com/gin-gonic/gin"
 )
 

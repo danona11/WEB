@@ -47,7 +47,7 @@ func RequireAuth(ctx *gin.Context) {
 		}
 	}
 
-	//find the user with token subject(incase he was deleted from the DB):
+	//find the user with token claims -subject(incase he was deleted from the DB):
 	var user modules.User
 	initializers.DB_ptr.First(&user, "User_id = ?", claims["subject"])
 
