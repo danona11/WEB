@@ -1,21 +1,21 @@
 import { Link, useNavigate } from "react-router-dom";
 
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 
 
 export default function LoginPage() {
     
-    const [email, setEmail] = useState()        //returns the email string and a setter func - will rerender when updated
-    const [password, setPassword] = useState()  //returns the password string and the setter func
+    const [email, setEmail] = useState("");             //returns the email string and a setter func - will rerender when updated
+    const [password, setPassword] = useState("");      //returns the password string and the setter func
 
 //Link will send the client straight to the next page, without waiting for the responce of the BE
 //NAV: when pressing a button for fetching 
     const nav = useNavigate();  
 
 //when the user presses the login button th efunction will activate:
-    const handleLogin = async(event) => {   //async - allows await when fetching
+    const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
         
-        event.preventDefault();     //the page wont refresh when pressing login
+        e.preventDefault();     //the page wont refresh when pressing login
         
         // sending the data to the BackEnd in json :
         try{
@@ -24,7 +24,7 @@ export default function LoginPage() {
                 {
                     method: "POST" ,
 
-                    header: { "Content-Type" : "application/json"},
+                    headers: { "Content-Type" : "application/json"},
                     
                     body: JSON.stringify(   //converts a JS object to a JSON string
                         {
@@ -58,7 +58,7 @@ export default function LoginPage() {
             //will activate the handleLogin func:
 }
 
-            <form onSubmit= {handleLogin} style= {{marginLeft: '20px', marginRight: '20px'}}>
+            <form onSubmit={handleLogin} style= {{marginLeft: '20px', marginRight: '20px'}}>
                 <label>email address: </label>
                 <input type="text" value={email} onChange={ (event) => setEmail(event.target.value) }/>
 

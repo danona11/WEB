@@ -10,11 +10,11 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/spf13/viper"
 )
+
 // validates the user is who he is, so that when a user does an important task, it is defiently him.
 // header: the hasing algorithm , and toket type(jwt)
 // claims: the data - need the user id , token create date , token exp date , user perrmissions
 // signature: a secret signature for all the tokens, to varify all tokens arr authentic.
-
 
 func RequireAuth(ctx *gin.Context) {
 	//get the cookie:
@@ -49,9 +49,9 @@ func RequireAuth(ctx *gin.Context) {
 
 	//find the user with token claims -subject(incase he was deleted from the DB):
 	var user modules.User
-	initializers.DB_ptr.First(&user, "User_id = ?", claims["subject"])
+	initializers.DB_ptr.First(&user, "user_id = ?", claims["subject"])
 
-	if user.User_id == 0 { 
+	if user.UserID == 0 {
 		ctx.AbortWithStatus(http.StatusUnauthorized)
 		return
 	}

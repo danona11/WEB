@@ -1,10 +1,18 @@
 package modules
 
-import "gorm.io/gorm"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
 
 type ReceiptProductsList struct {
-	gorm.Model
-	Receipt_id     uint `gorm:"primary_key ; column:Receipt_id"`
-	Product_id     uint `gorm:"secondary_key ; column:Product_id"`
-	Product_amount int
+	// Using two primaryKey tags creates a composite primary key
+	ReceiptID     uint `gorm:"primaryKey;column:receipt_id" json:"Receipt_id"`
+	ProductID     uint `gorm:"primaryKey;column:product_id" json:"Product_id"`
+	ProductAmount int  `gorm:"column:product_amount" json:"Product_amount"`
+
+	CreatedAt time.Time      `json:"-"`
+	UpdatedAt time.Time      `json:"-"`
+	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
 }

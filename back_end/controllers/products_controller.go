@@ -13,9 +13,9 @@ func CreateProduct(ctx *gin.Context) {
 
 	ctx.Bind(&info)
 
-	prod := modules.Product{Product_name: info.Product_name,
-		Product_stock: info.Product_stock,
-		Product_price: info.Product_price}
+	prod := modules.Product{ProductName: info.ProductName,
+		ProductStock: info.ProductStock,
+		ProductPrice: info.ProductPrice}
 
 	result := initializers.DB_ptr.Create(&prod)
 	if result.Error != nil {
@@ -74,9 +74,9 @@ func UpdateProduct(ctx *gin.Context) {
 	}
 
 	initializers.DB_ptr.Model(&old_prod).
-		Updates(modules.Product{Product_name: upd_prod.Product_name,
-			Product_stock: upd_prod.Product_stock,
-			Product_price: upd_prod.Product_price,
+		Updates(modules.Product{ProductName: upd_prod.ProductName,
+			ProductStock: upd_prod.ProductStock,
+			ProductPrice: upd_prod.ProductPrice,
 		})
 
 	ctx.JSON(200, gin.H{"product": old_prod})

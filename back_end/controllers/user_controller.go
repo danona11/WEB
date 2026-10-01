@@ -125,7 +125,7 @@ func Login(ctx *gin.Context) {
 	//login info valid - will genarate a token:
 	// Create a new token object, specifying signing method and the claims you would like it to contain.
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"subject":  login_user.User_id,
+		"subject":  login_user.UserID,
 		"exp_date": time.Now().Add(time.Minute * 30).Unix(),
 	})
 	secret := os.Getenv("secret")
@@ -165,9 +165,9 @@ func SignUp(ctx *gin.Context) {
 	}
 
 	newUser := modules.User{
-		User_name: register_input.User_name,
-		Email:     register_input.Email,
-		Password:  string(hash)}
+		UserName: register_input.User_name,
+		Email:    register_input.Email,
+		Password: string(hash)}
 
 	result := initializers.DB_ptr.Create(&newUser)
 	//Note:need to check if user already exists
@@ -192,7 +192,7 @@ func Validate(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"message":   "user validated",
-		"user_name": user.User_name,
+		"user_name": user.UserName,
 		"email":     user.Email,
 	})
 }

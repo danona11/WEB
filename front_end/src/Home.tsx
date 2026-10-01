@@ -4,7 +4,7 @@ export default function Home() {
     return (
         <div className="home" style={{textAlign: 'center', marginTop: '50px'}}>
             
-            <h>Football Kits</h>
+            <h1>Football Kits</h1>
             
             <br></br>
             

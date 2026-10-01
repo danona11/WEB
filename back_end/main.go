@@ -31,10 +31,13 @@ func main() {
 		AllowCredentials: true, //allows cookie saving in our server
 	}))
 
-	//routing:
-	//open routes - no need for cookie or token
-	router.POST("/signup", controllers.SignUp)
-	router.POST("/login", controllers.Login)
+	//publicRoutes - no need for authentication, so no need for the requireAuth middleware:
+	publicRoutes := router.Group("/")
+	{
+		publicRoutes.POST("/signup", controllers.SignUp)
+		publicRoutes.POST("/login", controllers.Login)
+		publicRoutes.POST("/products", controllers.CreateProduct)
+	}
 
 	//protected routes - will activate requireAuth for all autherized requests
 	protectedRoutes := router.Group("/")
@@ -43,7 +46,7 @@ func main() {
 		protectedRoutes.GET("/validate", controllers.Validate)
 
 		//Products Controllers:
-		protectedRoutes.POST("/products", controllers.CreateProduct)
+		// protectedRoutes.POST("/products", controllers.CreateProduct)
 		protectedRoutes.GET("/products", controllers.ProductIndex)
 		protectedRoutes.GET("/products/:id", controllers.ShowProduct)
 		protectedRoutes.PUT("/products/:id", controllers.UpdateProduct)
