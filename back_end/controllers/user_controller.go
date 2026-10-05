@@ -126,7 +126,7 @@ func SendLogin(ctx *gin.Context) {
 	// Create a new token object, specifying signing method and the claims you would like it to contain.
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"subject": login_user.UserID,
-		"expDate": time.Now().Add(time.Minute * 30).Unix(),
+		"exp": time.Now().Add(time.Minute * 30).Unix(),
 	})
 	secret := os.Getenv("secret")
 
@@ -137,7 +137,7 @@ func SendLogin(ctx *gin.Context) {
 	}
 
 	ctx.SetSameSite(http.SameSiteLaxMode)
-	ctx.SetCookie("Authorization", tokenString, 1800, "", "", false, true) //30 minutes, httponly - onlye the browser and the server can read
+	ctx.SetCookie("Authorization", tokenString, 1800, "/", "", false, true) //30 minutes, httponly - onlye the browser and the server can read
 
 	ctx.JSON(http.StatusOK, gin.H{"message": "cookie"})
 
@@ -188,6 +188,7 @@ func Validate(ctx *gin.Context) {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "user dosn't have authintication"})
 		return
 	}
+	
 	//from gin user type to DB user type:
 	user := userData.(modules.User)
 

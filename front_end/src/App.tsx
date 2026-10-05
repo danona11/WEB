@@ -3,7 +3,6 @@
 //  and is responsible for rendering the other components, 
 //    and managing the overall state of the application.
 
-import { useState } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import LoginPage from './pages/LoginPage.tsx';
 import HomePage from './pages/HomePage.tsx';
@@ -31,7 +30,7 @@ export default function App() {
                 }/>
 
                 <Route path="/home" element={
-                                            <ProtectedRoutes>
+                                            <ProtectedRoutes isAdminRoute={false}>
                                                 <HomePage />
                                             </ProtectedRoutes>
                 }/>
