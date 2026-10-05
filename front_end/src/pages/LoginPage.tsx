@@ -20,7 +20,7 @@ export default function LoginPage() {
         // sending the data to the BackEnd in json :
         try{
             const response = await fetch(
-                "http://localhost:8080/Login" , 
+                "http://localhost:8080/" , 
                 {
                     method: "POST" ,
 
@@ -37,26 +37,21 @@ export default function LoginPage() {
             )
 
             if (response.ok) {
-                alert("the connection worked")
-                nav("/Home")
+                nav("/home")
             }
 
-            else    alert("the connection hasn't worked ")
+            else    alert("user email or password inccorect, pls try again")
         }
         
         catch(error){
             console.error("network error", error)
-            alert("request not avilable rn")
+            alert("network error")
         }
     }
     return (    
         <div className="login-page" style={{textAlign: 'center', marginTop: '50px'}}>
             <h1>Football Kits</h1>
             <h3>Log in</h3>
-
-{//comment:
-            //will activate the handleLogin func:
-}
 
             <form onSubmit={handleLogin} style= {{marginLeft: '20px', marginRight: '20px'}}>
                 <label>email address: </label>

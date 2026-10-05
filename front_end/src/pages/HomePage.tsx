@@ -1,6 +1,5 @@
-import CartButton from './CartButton.js'
-
-export default function Home() {
+import CartButton from "../components/CartButton";
+export default function HomePage() {
     return (
         <div className="home" style={{textAlign: 'center', marginTop: '50px'}}>
             

@@ -1,23 +1,14 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
+// @ts-expect-error CSS is loaded by the bundler at runtime.
+
 import './index.css'
-import App from './App.js'
-import { createBrowserRouter , RouterProvider } from 'react-router-dom'
+import App from './App.tsx'
+import ContextProvider from './context/ContextProvider.tsx'
 
-import Home from './Home.js'
-import SignUpPage from './SignUpPage.js'
-import PageNotFound from './PageNotFound.js'
 
-const router = createBrowserRouter([
-  { path: "/", element: <App/> },
-  { path: "/home", element: <Home/> },
-  { path: "/signUpPage", element: <SignUpPage/> },
-
-  { path: "*", element: <PageNotFound/> },
-]);
-
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
-      <RouterProvider router={router}/>
-  </StrictMode>
-)  
+createRoot(document.getElementById('root')!).render(
+  <ContextProvider>
+    <App />
+  </ContextProvider>
+)

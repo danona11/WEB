@@ -25,7 +25,7 @@ func main() {
 	//CORS:
 
 	router.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"*"}, //the react's address
+		AllowOrigins:     []string{"http://localhost:5173"}, //the react's address
 		AllowMethods:     []string{"POST", "GET", "OPTIONS", "PUT", "DELETE"},
 		AllowHeaders:     []string{"Origin", "Content-Type"},
 		AllowCredentials: true, //allows cookie saving in our server
@@ -34,9 +34,8 @@ func main() {
 	//publicRoutes - no need for authentication, so no need for the requireAuth middleware:
 	publicRoutes := router.Group("/")
 	{
-		publicRoutes.POST("/signup", controllers.SignUp)
-		publicRoutes.POST("/login", controllers.Login)
-		publicRoutes.POST("/products", controllers.CreateProduct)
+		publicRoutes.POST("/signup", controllers.SendSignUp)
+		publicRoutes.POST("/", controllers.SendLogin)
 	}
 
 	//protected routes - will activate requireAuth for all autherized requests
@@ -45,13 +44,13 @@ func main() {
 	{
 		protectedRoutes.GET("/validate", controllers.Validate)
 
-		//Products Controllers:
-		// protectedRoutes.POST("/products", controllers.CreateProduct)
+		//products controllers:
+		protectedRoutes.POST("/products", controllers.CreateProduct)
 		protectedRoutes.GET("/products", controllers.ProductIndex)
 		protectedRoutes.GET("/products/:id", controllers.ShowProduct)
 		protectedRoutes.PUT("/products/:id", controllers.UpdateProduct)
 		protectedRoutes.DELETE("/products/:id", controllers.DeleteProduct)//prod wont be copltetley deleted, for callback reassons
-
+		
 	}
 
 	//start the app:

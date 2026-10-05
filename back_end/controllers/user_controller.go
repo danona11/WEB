@@ -92,7 +92,7 @@ func UserById(ctx *gin.Context) {
 }
 */
 
-func Login(ctx *gin.Context) {
+func SendLogin(ctx *gin.Context) {
 
 	var login_input struct {
 		Email    string
@@ -118,15 +118,15 @@ func Login(ctx *gin.Context) {
 	//will hash the inputed password, and compare to the same user's password from the DB
 	err = bcrypt.CompareHashAndPassword([]byte(login_user.Password), []byte(login_input.Password))
 	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "password incorrect"}) //לא בטוח איזה status
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "password incorrect"})
 		return
 	}
 
 	//login info valid - will genarate a token:
 	// Create a new token object, specifying signing method and the claims you would like it to contain.
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"subject":  login_user.UserID,
-		"exp_date": time.Now().Add(time.Minute * 30).Unix(),
+		"subject": login_user.UserID,
+		"expDate": time.Now().Add(time.Minute * 30).Unix(),
 	})
 	secret := os.Getenv("secret")
 
@@ -143,9 +143,9 @@ func Login(ctx *gin.Context) {
 
 }
 
-func SignUp(ctx *gin.Context) {
+func SendSignUp(ctx *gin.Context) {
 	var register_input struct {
-		User_name   string
+		UserName    string
 		Email       string
 		Password    string
 		Permissions bool
@@ -165,7 +165,7 @@ func SignUp(ctx *gin.Context) {
 	}
 
 	newUser := modules.User{
-		UserName: register_input.User_name,
+		UserName: register_input.UserName,
 		Email:    register_input.Email,
 		Password: string(hash)}
 
@@ -180,6 +180,7 @@ func SignUp(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"messge": "new user registerd and saved in tha database"})
 }
 
+// validate the user is who he is, so that when a user does an important task, it is defiently him.
 func Validate(ctx *gin.Context) {
 	// get the userData from the local memmory of the router
 	userData, exists := ctx.Get("user")
@@ -191,8 +192,9 @@ func Validate(ctx *gin.Context) {
 	user := userData.(modules.User)
 
 	ctx.JSON(http.StatusOK, gin.H{
-		"message":   "user validated",
-		"user_name": user.UserName,
-		"email":     user.Email,
+		"message":     "user validated",
+		"userName":    user.UserName,
+		"email":       user.Email,
+		"permissions": user.Permissions,
 	})
 }
