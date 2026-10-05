@@ -35,7 +35,7 @@ func main() {
 	publicRoutes := router.Group("/")
 	{
 		publicRoutes.POST("/signup", controllers.SendSignUp)
-		publicRoutes.POST("/", controllers.SendLogin)
+		publicRoutes.POST("/login", controllers.SendLogin)
 	}
 
 	//protected routes - will activate requireAuth for all autherized requests

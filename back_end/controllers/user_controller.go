@@ -144,29 +144,28 @@ func SendLogin(ctx *gin.Context) {
 }
 
 func SendSignUp(ctx *gin.Context) {
-	var register_input struct {
+	var userDetails struct {
 		UserName    string
 		Email       string
 		Password    string
-		Permissions bool
 	}
 
-	err := ctx.Bind(&register_input)
-	if err != nil { //couldnt bind into register_input
+	err := ctx.Bind(&userDetails)
+	if err != nil { //couldnt bind into userDetails
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "user details unaccesptable"})
 		return
 	}
 
 	//bcrypt will hash the users passwords in the db: will generate a 22dig salt, and encrypt the password to a combined string of the both: (salt+hash)
-	hash, err := bcrypt.GenerateFromPassword([]byte(register_input.Password), 10) //10 cost factor repressents how slow the hashing alg will be
+	hash, err := bcrypt.GenerateFromPassword([]byte(userDetails.Password), 10) //10 cost factor repressents how slow the hashing alg will be
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "failed to hash the password"})
 		return
 	}
 
 	newUser := modules.User{
-		UserName: register_input.UserName,
-		Email:    register_input.Email,
+		UserName: userDetails.UserName,
+		Email:    userDetails.Email,
 		Password: string(hash)}
 
 	result := initializers.DB_ptr.Create(&newUser)
@@ -188,7 +187,7 @@ func Validate(ctx *gin.Context) {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "user dosn't have authintication"})
 		return
 	}
-	
+
 	//from gin user type to DB user type:
 	user := userData.(modules.User)
 
