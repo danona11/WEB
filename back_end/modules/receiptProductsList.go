@@ -7,10 +7,10 @@ import (
 )
 
 type ReceiptProductsList struct {
-	// Using two primaryKey tags creates a composite primary key
-	ReceiptID     uint `gorm:"primaryKey;column:receipt_id" json:"Receipt_id"`
-	ProductID     uint `gorm:"primaryKey;column:product_id" json:"Product_id"`
-	ProductAmount int  `gorm:"column:product_amount" json:"Product_amount"`
+	ReceiptID     uint `gorm:"primaryKey;column:receipt_id" json:"receipt_id"`
+	ProductID     uint `gorm:"primaryKey;column:product_id" json:"product_id"`
+	ProductAmount uint  `gorm:"column:product_amount" json:"product_amount"`
+	ProductPrice     float64 `gorm:"column:product_price" json:"product_price"`
 
 	CreatedAt time.Time      `json:"-"`
 	UpdatedAt time.Time      `json:"-"`

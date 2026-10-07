@@ -7,10 +7,9 @@ import (
 
 type Receipt struct {
 	ReceiptID    uint                  `gorm:"primaryKey;column:receipt_id;autoIncrement"`
-	UserID       uint                  `gorm:"column:user_id" json:"User_id"` 
-	SumPrice     float64               `gorm:"column:sum_price" json:"Sum_price"`
+	UserID       uint                  `gorm:"column:user_id" json:"user_id"` 
+	SumPrice     float64               `gorm:"column:sum_price" json:"sum_price"`
 	
-	// The foreignKey tag points to the ReceiptID field inside ReceiptProductsList
 	ProductsList []ReceiptProductsList `gorm:"foreignKey:ReceiptID" json:"-"`
 
 	CreatedAt time.Time      `json:"-"`

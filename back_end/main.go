@@ -48,10 +48,12 @@ func main() {
 		protectedRoutes.POST("/addProduct", controllers.CreateProduct)
 		protectedRoutes.PUT("/updateProduct/:id", controllers.UpdateProduct)
 		protectedRoutes.DELETE("/deleteProduct/:id", controllers.DeleteProduct)
-
 		protectedRoutes.GET("/products", controllers.ProductIndex)
 		protectedRoutes.GET("/products/:id", controllers.ShowProduct)
 		
+		//receipts controllers:
+		protectedRoutes.POST("/createReceipt", controllers.CreateReceipt)
+
 	}
 
 	//start the app:
