@@ -109,8 +109,8 @@ func SendLogin(ctx *gin.Context) {
 	var login_user modules.User
 
 	//select * from users where email = login_input.Email , First - will stop searching when found 1
-	found := initializers.DB_ptr.First(&login_user, "email= ?", login_input.Email)
-	if found.Error != nil { //not found - will return
+	found := initializers.DB_ptr.First(&login_user, login_input.Email)
+	if found.Error != nil {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "email is not registered"})
 		return
 	}
@@ -197,4 +197,12 @@ func Validate(ctx *gin.Context) {
 		"email":       user.Email,
 		"permissions": user.Permissions,
 	})
+}
+
+
+func DeleteUser(ctx *gin.Context) {
+
+
+
+
 }

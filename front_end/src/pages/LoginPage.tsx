@@ -20,7 +20,7 @@ export default function LoginPage() {
         // sending the data to the BackEnd in json :
         try{
             const response = await fetch(
-                "http://localhost:8080/login" , 
+                "http://localhost:8080/" , 
                 {
                     method: "POST" ,
 

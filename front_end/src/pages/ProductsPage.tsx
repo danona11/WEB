@@ -13,7 +13,7 @@ export default function ProductsPage() {
             // sending the data to the BackEnd in json :
             try{
                 const response = await fetch(
-                    "http://localhost:8080/productsPage" , 
+                    "http://localhost:8080/products" , 
                     {
                         method: "GET" ,
                         credentials: "include" //cookies

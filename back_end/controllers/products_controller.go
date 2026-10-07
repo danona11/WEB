@@ -9,13 +9,13 @@ import (
 
 func CreateProduct(ctx *gin.Context) {
 
-	var info modules.Product
+	var productInfo modules.Product
 
-	ctx.Bind(&info)
+	ctx.Bind(&productInfo)
 
-	prod := modules.Product{ProductName: info.ProductName,
-		ProductStock: info.ProductStock,
-		ProductPrice: info.ProductPrice}
+	prod := modules.Product{ProductName: productInfo.ProductName,
+		ProductStock: productInfo.ProductStock,
+		ProductPrice: productInfo.ProductPrice}
 
 	result := initializers.DB_ptr.Create(&prod)
 	if result.Error != nil {
@@ -27,15 +27,15 @@ func CreateProduct(ctx *gin.Context) {
 
 // show all the posts:
 func ProductIndex(ctx *gin.Context) {
-	var prods_list []modules.Product
+	var prodsList []modules.Product
 
-	result := initializers.DB_ptr.Find(&prods_list)
+	result := initializers.DB_ptr.Find(&prodsList)
 	if result.Error != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "failed to fetch product"})
 		return
 	}
 
-	ctx.JSON(200, gin.H{"Product": prods_list})
+	ctx.JSON(200, gin.H{"Product": prodsList})
 
 }
 

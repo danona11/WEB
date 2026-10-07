@@ -45,11 +45,12 @@ func main() {
 		protectedRoutes.GET("/validate", controllers.Validate)
 
 		//products controllers:
-		protectedRoutes.POST("/products", controllers.CreateProduct)
+		protectedRoutes.POST("/addProduct", controllers.CreateProduct)
+		protectedRoutes.PUT("/updateProduct/:id", controllers.UpdateProduct)
+		protectedRoutes.DELETE("/deleteProduct/:id", controllers.DeleteProduct)
+
 		protectedRoutes.GET("/products", controllers.ProductIndex)
 		protectedRoutes.GET("/products/:id", controllers.ShowProduct)
-		protectedRoutes.PUT("/products/:id", controllers.UpdateProduct)
-		protectedRoutes.DELETE("/products/:id", controllers.DeleteProduct)//prod wont be copltetley deleted, for callback reassons
 		
 	}
 

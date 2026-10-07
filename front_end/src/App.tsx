@@ -7,9 +7,10 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import LoginPage from './pages/LoginPage.tsx';
 import HomePage from './pages/HomePage.tsx';
 import SignUpPage from './pages/SignUpPage.tsx';
-import ManageUsersPage from './pages/ManageUsersPage.tsx';
 import PageNotFound from './pages/PageNotFound.tsx';
 import ProtectedRoutes from './context/ProtectedRoutes.tsx';
+import ManageUsersPage from './pages/AdminPages/ManageUsersPage.tsx';
+import ManageProductsPage from './pages/AdminPages/ManageProductsPage.tsx';
 
 export default function App() {
 
@@ -21,14 +22,23 @@ export default function App() {
                 <Route path="/signUp" element={<SignUpPage />} />
 
 {
-    //protected routes for only accessible to users with admin permissions:
+    //protected routes only accessible to users with admin permissions:
 }
                 <Route path="/manageUsers" element={
-                                                    <ProtectedRoutes isAdminRoute={true}>
+                                                    <ProtectedRoutes isAdminRoute={false}>
                                                         <ManageUsersPage />
                                                     </ProtectedRoutes>
                 }/>
-
+                
+                <Route path="/manageProducts" element={
+                                                    <ProtectedRoutes isAdminRoute={false}>
+                                                        <ManageProductsPage />
+                                                    </ProtectedRoutes>
+                }/>
+                
+{
+    //protected routes accessible to all users who logged in:
+}
                 <Route path="/home" element={
                                             <ProtectedRoutes isAdminRoute={false}>
                                                 <HomePage />
