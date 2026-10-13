@@ -1,14 +1,14 @@
 import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
-import LoginPage from './pages/LoginPage.tsx';
-import HomePage from './pages/HomePage.tsx';
-import SignUpPage from './pages/SignUpPage.tsx';
-import PageNotFound from './pages/PageNotFound.tsx';
-import CartPage from './pages/CartPage.tsx';
-import ProductsPage from './pages/ProductsPage.tsx';
-import ProtectedRoutes from './context/ProtectedRoutes.tsx';
-import ManageUsersPage from './pages/AdminPages/ManageUsersPage.tsx';
-import ManageProductsPage from './pages/AdminPages/ManageProductsPage.tsx';
-import NavBar from './components/NavBar.tsx' 
+import LoginPage from './pages/LoginPage';
+import HomePage from './pages/HomePage';
+import SignUpPage from './pages/SignUpPage';
+import PageNotFound from './pages/PageNotFound';
+import CartPage from './pages/CartPage';
+import ProductsPage from './pages/ProductsPage';
+import ProtectedRoutes from './context/ProtectedRoutes';
+import ManageUsersPage from './pages/AdminPages/ManageUsersPage';
+import ManageProductsPage from './pages/AdminPages/ManageProductsPage';
+import NavBar from './components/NavBar' 
 
 function NavbarLayout() {
   return ( 
@@ -33,14 +33,15 @@ export default function App() {
         //protected routes only accessible to users with admin permissions:
     }               
                 <Route element={<NavbarLayout/>}>
-                    <Route path="/manageUsers" element={
-                        <ProtectedRoutes isAdminRoute={false}>
+
+                    <Route  path="/manageUsers" element={
+                        <ProtectedRoutes isAdminRoute={true}>
                             <ManageUsersPage />
                         </ProtectedRoutes>
                     }/>
                     
                     <Route path="/manageProducts" element={
-                        <ProtectedRoutes isAdminRoute={false}>
+                        <ProtectedRoutes isAdminRoute={true}>
                             <ManageProductsPage />
                         </ProtectedRoutes>
                     }/>   
@@ -70,8 +71,5 @@ export default function App() {
                 <Route path="*" element={<PageNotFound />} />   
             </Routes>
         </BrowserRouter>
-
-             
     );
-  
 }

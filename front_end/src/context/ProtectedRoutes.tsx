@@ -3,6 +3,7 @@
     import { Navigate } from 'react-router-dom';
 
     export default function ProtectedRoutes( { children , isAdminRoute = false }: { children: React.ReactNode , isAdminRoute?: boolean }) {
+        
         const [auth , setAuth ] = useState<boolean | null>(null);
         const [permissions , setPermissions ] = useState<boolean | null>(null);
 
@@ -13,7 +14,7 @@
         const verifyauth = async () => {
 
             try{
-                const response = await fetch('http://localhost:8080/validate', {
+                const response = await fetch(`${import.meta.env.VITE_API_URL}/validate`, {
                     method: 'GET',
                     credentials: 'include',
                 });
@@ -36,22 +37,20 @@
         }
 
         //for when the backend is still checking if the user is authenticated or not,
-        // we can show a loading spinner or a message to the user.   
         if (auth === null) {
             return <div>Loading...</div>; // or a loading spinner
         }    
         
-        // If the user is not authenticated, redirect to the login page
+        //if the user is not authenticated, redirect to the login page
         if (auth === false) {
             return <Navigate to="/login" />;
         }
 
-        // If the user is authenticated: 
-
-        // if route is admin route and if the user has admin permissions:
+        //if the user is authenticated: 
+        //if route is admin route true and if the user has admin permissions:
         if (isAdminRoute && !permissions) {
             alert("only users with admin permissions can access this page");
-            return <Navigate to="/home" />;
+            return <Navigate to="/products" />;
         }
 
         return children;

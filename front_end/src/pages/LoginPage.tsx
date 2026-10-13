@@ -1,6 +1,8 @@
 import { Link, useNavigate } from "react-router-dom";
 import { FormEvent, useState } from "react";
 import Alert from '@mui/material/Alert';
+import { Button } from "@mui/material";
+import Debounce from "../debounce";
 
 
 export default function LoginPage() {
@@ -12,14 +14,25 @@ export default function LoginPage() {
 //NAV: when pressing a button for fetching 
     const nav = useNavigate();  
 
-//when the user presses the login button th efunction will activate:
+    const debounceUsername = Debounce(userName , setUserName , 200)
+    const debouncePassword = Debounce(password , setPassword , 200)
+
+
+    const handleChangeUserName = (e:React.ChangeEvent<HTMLInputElement>) => {
+        setUserName(e.target.value)
+    }
+
+    const handleChangePassword = (e:React.ChangeEvent<HTMLInputElement>) => {
+        setPassword(e.target.value)
+    }
+
     const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
         
         e.preventDefault();     //the page wont refresh when pressing login
         
         // sending the data to the BackEnd in json :
         try{
-            const response = await fetch( `${import.meta.env.VITE_API_URL}/`, 
+            const response = await fetch( `${import.meta.env.VITE_API_URL}/login`, 
                 {
                     method: "POST" ,
                     headers: { "Content-Type" : "application/json"},
@@ -48,6 +61,7 @@ export default function LoginPage() {
             <Alert severity="error">request not avilable rn</Alert>
         }
     }
+
     return (    
         <div className="login-page" style={{textAlign: 'center', marginTop: '50px'}}>
             <h1>Football Kits</h1>
@@ -55,13 +69,13 @@ export default function LoginPage() {
 
             <form onSubmit={handleLogin} style= {{marginLeft: '20px', marginRight: '20px'}}>
                 <label>user name: </label>
-                <input type="text" value={userName} onChange={ (event) => setUserName(event.target.value) }/>
+                <input type="text" value={debounceUsername} onChange={handleChangeUserName}/>
 
                 <br></br>
 
                 <label>password: </label>
-                <input type="password" value={password} onChange={ (event) => setPassword(event.target.value) }/>
-                        
+                <input type="password" value={debouncePassword} onChange={handleChangePassword}/>
+
                 <br></br>
                 <br></br>
 
@@ -71,10 +85,9 @@ export default function LoginPage() {
             <br></br>
 
             <p> don't have an account? </p>
-            <Link to={"/signUp"}>
-                <button>Sign Up</button>
-            </Link>
+            <Button variant="contained">
+                sign up
+            </Button>
         </div>
     );
 }
-

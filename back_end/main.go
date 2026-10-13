@@ -51,5 +51,5 @@ func main() {
 	protectedRoutes.POST("/createReceipt", controllers.CreateReceipt)
 
 	//start the app:
-		router.Run("localhost:8080") 
+	router.Run("localhost:8080") 
 }
