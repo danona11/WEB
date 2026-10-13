@@ -2,14 +2,15 @@ package modules
 
 import (
 	"time"
+
 	"gorm.io/gorm"
 )
 
 type Product struct {
-	ProductID    uint    `gorm:"primaryKey;column:product_id;autoIncrement"`
-	ProductName  string  `gorm:"column:product_name;unique" json:"product_name"`
-	ProductStock uint    `gorm:"column:product_stock" json:"product_stock"`
-	ProductPrice float64 `gorm:"column:product_price" json:"product_price"`
+	ProductID    uint    `gorm:"primaryKey;column:product_id;autoIncrement" json:"ProductID"`
+	ProductName  string  `gorm:"column:product_name" json:"ProductName"`
+	ProductStock uint    `gorm:"column:product_stock" json:"ProductStock"`
+	ProductPrice float64 `gorm:"column:product_price" json:"ProductPrice"`
 
 	CreatedAt time.Time      `json:"-"`
 	UpdatedAt time.Time      `json:"-"`

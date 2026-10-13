@@ -1,6 +1,8 @@
-import { Link, useNavigate } from "react-router-dom";
-
+import { useNavigate } from "react-router-dom";
 import { FormEvent, useState } from "react";
+import Alert from '@mui/material/Alert';
+import Box from '@mui/material/Box';
+
 
 export default function SignUpPage() {
 
@@ -19,15 +21,12 @@ export default function SignUpPage() {
         e.preventDefault();     //the page wont refresh when pressing login
         
         // sending the data to the BackEnd in json :
-        try{
-            const response = await fetch(
-                "http://localhost:8080/signup" , 
+        try{            
+            const response = await fetch( `${import.meta.env.VITE_API_URL}/signup`, 
                 {
                     method: "POST" ,
-
                     headers: { "Content-Type" : "application/json"},
-                    
-                    body: JSON.stringify(   //converts a JS object to a JSON string
+                    body: JSON.stringify(
                         {
                             Email: email,
                             Password: password, 
@@ -39,15 +38,17 @@ export default function SignUpPage() {
             )
 
             if (response.ok) {
-                nav("/home")
+                nav("/products")
             }
 
-            else    alert("user details not valid, pls try again")
+            else{
+                <Alert severity="error">failed to fetch the products</Alert>
+            }
         }
         
         catch(error){
-            console.error("network error", error)
-            alert("network error")
+            console.error("network error", error);
+            <Alert severity="error">request not avilable rn</Alert>
         }
     }
 

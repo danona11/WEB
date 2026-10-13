@@ -15,7 +15,6 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-// handles GET requests from the F.E. and return the users list in json form
 func GetRequests(ctx *gin.Context) { //gin.context = all the info about the request
 
 	var users_list []modules.User
@@ -95,38 +94,36 @@ func UserById(ctx *gin.Context) {
 func SendLogin(ctx *gin.Context) {
 
 	var login_input struct {
-		Email    string
-		Password string
+    	UserName    string `json:"UserName"`
+    	Password 	string `json:"Password"`
 	}
 
 	err := ctx.Bind(&login_input) //will take the json from the front, and convert it to login_input type
-	if err != nil {               //if gin can't do the converstion it will show - StatusBadRequest
+	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "input not valid, please try again"})
 		return
 	}
 
-	//the user that has the same email
 	var login_user modules.User
 
-	//select * from users where email = login_input.Email , First - will stop searching when found 1
-	found := initializers.DB_ptr.First(&login_user, login_input.Email)
+	//select * from users where user_name = login_input.user_name , First - will stop searching when found 1
+	found := initializers.DB_ptr.First(&login_user, "user_name = ?", login_input.UserName)
 	if found.Error != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "email is not registered"})
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "user name is not registered"})
 		return
 	}
 
-	//will hash the inputed password, and compare to the same user's password from the DB
+	//will hash the inputed password with his salt, and compare to the same user's password from the DB:
 	err = bcrypt.CompareHashAndPassword([]byte(login_user.Password), []byte(login_input.Password))
 	if err != nil {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "password incorrect"})
 		return
 	}
 
-	//login info valid - will genarate a token:
-	// Create a new token object, specifying signing method and the claims you would like it to contain.
+	//login info valid - will genarate a token with the userID and exp:
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"subject": login_user.UserID,
-		"exp": time.Now().Add(time.Minute * 30).Unix(),
+		"exp":     time.Now().Add(time.Minute * 30).Unix(),
 	})
 	secret := os.Getenv("secret")
 
@@ -134,8 +131,10 @@ func SendLogin(ctx *gin.Context) {
 	tokenString, err := token.SignedString([]byte(secret))
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "failed to create token"})
+		return
 	}
 
+	//packs the token into a cookie - which the browser will attach to every request
 	ctx.SetSameSite(http.SameSiteLaxMode)
 	ctx.SetCookie("Authorization", tokenString, 1800, "/", "", false, true) //30 minutes, httponly - onlye the browser and the server can read
 
@@ -145,9 +144,9 @@ func SendLogin(ctx *gin.Context) {
 
 func SendSignUp(ctx *gin.Context) {
 	var userDetails struct {
-		UserName    string
-		Email       string
-		Password    string
+		UserName string
+		Email    string
+		Password string
 	}
 
 	err := ctx.Bind(&userDetails)
@@ -199,10 +198,6 @@ func Validate(ctx *gin.Context) {
 	})
 }
 
-
 func DeleteUser(ctx *gin.Context) {
-
-
-
 
 }

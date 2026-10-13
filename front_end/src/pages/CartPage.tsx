@@ -1,17 +1,23 @@
-// export default function CartPage(props) {
+import { useState } from "react";
 
-//     return (
-//         <>
-//         <div className="cart-page">
-//             <h1>Your Cart</h1>
-//             <p>your cart size: {props.cartSize}</p>
-//         </div>
 
-//         <button className="back-button" onClick={props.onClose}>
-//             Back to Shopping
-//         </button>
+export default function Cart() {
 
-//         </>
-//     );
+    const [cart, setCart] = useState(<Cart />);
 
-// }
+    const handleAddToCart = async() => {
+
+        
+
+    }
+
+    localStorage.setItem("key","value")
+
+
+    return (
+        <div className="cart">
+            <h1>Your Cart</h1>
+            <p>your cart size: 0</p>
+        </div>
+    );
+}

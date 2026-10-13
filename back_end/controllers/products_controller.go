@@ -4,6 +4,8 @@ import (
 	"my-project/initializers"
 	"my-project/modules"
 	"net/http"
+	"strconv"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -25,17 +27,23 @@ func CreateProduct(ctx *gin.Context) {
 
 }
 
-// show all the posts:
+
 func ProductIndex(ctx *gin.Context) {
 	var prodsList []modules.Product
 
-	result := initializers.DB_ptr.Find(&prodsList)
+	pageString := ctx.Param("page")//take the page num from the url
+
+	page, _ := strconv.Atoi(pageString)
+
+	offset:= ( page-1 )*5
+
+	result := initializers.DB_ptr.Limit(5).Offset(offset).Find(&prodsList)//limit of 5 prods per page - pagingtation
 	if result.Error != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "failed to fetch product"})
 		return
 	}
 
-	ctx.JSON(200, gin.H{"Product": prodsList})
+	ctx.JSON(200, gin.H{"Products": prodsList})
 
 }
 

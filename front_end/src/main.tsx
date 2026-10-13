@@ -12,3 +12,6 @@ createRoot(document.getElementById('root')!).render(
     <App />
   </ContextProvider>
 )
+
+
+// validate the user has a cookie - if not send to unauth user

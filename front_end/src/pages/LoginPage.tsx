@@ -1,11 +1,11 @@
 import { Link, useNavigate } from "react-router-dom";
-
 import { FormEvent, useState } from "react";
+import Alert from '@mui/material/Alert';
 
 
 export default function LoginPage() {
     
-    const [email, setEmail] = useState("");             //returns the email string and a setter func - will rerender when updated
+    const [userName, setUserName] = useState("");             //returns the user name string and a setter func - will rerender when updated
     const [password, setPassword] = useState("");      //returns the password string and the setter func
 
 //Link will send the client straight to the next page, without waiting for the responce of the BE
@@ -19,33 +19,33 @@ export default function LoginPage() {
         
         // sending the data to the BackEnd in json :
         try{
-            const response = await fetch(
-                "http://localhost:8080/" , 
+            const response = await fetch( `${import.meta.env.VITE_API_URL}/`, 
                 {
                     method: "POST" ,
-
                     headers: { "Content-Type" : "application/json"},
                     
-                    body: JSON.stringify(   //converts a JS object to a JSON string
+                    body: JSON.stringify(
                         {
-                            Email: email,
+                            UserName: userName,
                             Password: password
                         }
                     ),
-                    credentials: "include" //cookies
+                    credentials: "include"
                 }   
             )
 
             if (response.ok) {
-                nav("/home")
+                nav("/products")
             }
 
-            else    alert("user email or password inccorect, pls try again")
+            else{
+                <Alert severity="error">fetch failed</Alert>
+            }               
         }
         
         catch(error){
-            console.error("network error", error)
-            alert("network error")
+            console.error("network error", error);
+            <Alert severity="error">request not avilable rn</Alert>
         }
     }
     return (    
@@ -54,8 +54,8 @@ export default function LoginPage() {
             <h3>Log in</h3>
 
             <form onSubmit={handleLogin} style= {{marginLeft: '20px', marginRight: '20px'}}>
-                <label>email address: </label>
-                <input type="text" value={email} onChange={ (event) => setEmail(event.target.value) }/>
+                <label>user name: </label>
+                <input type="text" value={userName} onChange={ (event) => setUserName(event.target.value) }/>
 
                 <br></br>
 
@@ -71,7 +71,7 @@ export default function LoginPage() {
             <br></br>
 
             <p> don't have an account? </p>
-            <Link to={"/SignUpPage"}>
+            <Link to={"/signUp"}>
                 <button>Sign Up</button>
             </Link>
         </div>
