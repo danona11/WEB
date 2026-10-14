@@ -1,4 +1,7 @@
-export const API_URL = import.meta.env.VITE_API_URL as string;
-if (!API_URL) {
-  throw new Error("VITE_API_URL is not defined");
-}
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+
+export default defineConfig({
+  plugins: [react()],
+  envDir: '../',
+})

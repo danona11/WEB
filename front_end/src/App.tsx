@@ -3,7 +3,6 @@ import LoginPage from './pages/LoginPage';
 import HomePage from './pages/HomePage';
 import SignUpPage from './pages/SignUpPage';
 import PageNotFound from './pages/PageNotFound';
-import CartPage from './pages/CartPage';
 import ProductsPage from './pages/ProductsPage';
 import ProtectedRoutes from './context/ProtectedRoutes';
 import ManageUsersPage from './pages/AdminPages/ManageUsersPage';
@@ -54,11 +53,11 @@ export default function App() {
                         </ProtectedRoutes>
                     }/>
 
-                    <Route path="/cart" element={
+                    {/* <Route path="/cart" element={
                         <ProtectedRoutes isAdminRoute={false}>
                             <CartPage />
                         </ProtectedRoutes>
-                    }/>
+                    }/> */}
 
                     <Route path="/products" element={
                         <ProtectedRoutes isAdminRoute={false}>

@@ -1,30 +1,17 @@
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { FormEvent, useState } from "react";
 import Alert from '@mui/material/Alert';
 import { Button } from "@mui/material";
-import Debounce from "../debounce";
-
+import DebouncedTextField from "../components/DebouncedTextField"
 
 export default function LoginPage() {
     
-    const [userName, setUserName] = useState("");             //returns the user name string and a setter func - will rerender when updated
-    const [password, setPassword] = useState("");      //returns the password string and the setter func
+    const [userName, setUserName] = useState("");             
+    const [password, setPassword] = useState("");
 
 //Link will send the client straight to the next page, without waiting for the responce of the BE
 //NAV: when pressing a button for fetching 
     const nav = useNavigate();  
-
-    const debounceUsername = Debounce(userName , setUserName , 200)
-    const debouncePassword = Debounce(password , setPassword , 200)
-
-
-    const handleChangeUserName = (e:React.ChangeEvent<HTMLInputElement>) => {
-        setUserName(e.target.value)
-    }
-
-    const handleChangePassword = (e:React.ChangeEvent<HTMLInputElement>) => {
-        setPassword(e.target.value)
-    }
 
     const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
         
@@ -62,32 +49,38 @@ export default function LoginPage() {
         }
     }
 
-    return (    
-        <div className="login-page" style={{textAlign: 'center', marginTop: '50px'}}>
+    return (                
+        <form className="loginpageUI" onSubmit={handleLogin} style= {{maxWidth: '400px', margin: '0 auto', padding: '20px' , textAlign: 'center'}}>
+            
             <h1>Football Kits</h1>
             <h3>Log in</h3>
 
-            <form onSubmit={handleLogin} style= {{marginLeft: '20px', marginRight: '20px'}}>
-                <label>user name: </label>
-                <input type="text" value={debounceUsername} onChange={handleChangeUserName}/>
+            <DebouncedTextField 
+                label="user name:"
+                type="text"
+                setValue={setUserName}
+            />
 
-                <br></br>
-
-                <label>password: </label>
-                <input type="password" value={debouncePassword} onChange={handleChangePassword}/>
-
-                <br></br>
-                <br></br>
-
-                <button type="submit">Log In</button>
-
-            </form>
             <br></br>
 
-            <p> don't have an account? </p>
-            <Button variant="contained">
-                sign up
+            <DebouncedTextField 
+                label="password:"
+                type="password"
+                setValue={setPassword}
+            />
+
+            <br></br>
+            <br></br>
+
+            <Button type="submit" variant="contained">
+                login
             </Button>
-        </div>
+
+            <p> don't have an account? </p>
+            <Button onClick={()=>nav("/signup")} variant="contained">
+                signup
+            </Button>
+        </form>
+
     );
 }

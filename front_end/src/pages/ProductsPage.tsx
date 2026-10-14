@@ -1,12 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import Button from '@mui/material/Button';
-import Pagination from '@mui/material/Pagination';
-import Stack from '@mui/material/Stack';
+import {Box,Button,Pagination,Alert,Stack} from "@mui/material";
 import AddShoppingCartOutlinedIcon from '@mui/icons-material/AddShoppingCartOutlined';
 import Product from "../components/ProductInterface";
-import Alert from '@mui/material/Alert';
-import Box from "@mui/material/Box";
 
 export default function ProductsPage() {
     const [productsList, setProductsList] = useState<Product[]>([])
@@ -44,7 +40,7 @@ export default function ProductsPage() {
     const addToCart = (prod:Product) => {
         //get my cart from local memmory
         const myCart = localStorage.getItem("my_cart")
-        const cart = myCart ? JSON.parse(myCart): []    //if cart is empty return []
+        const cart = myCart ? JSON.parse(myCart): []
 
         cart.push(  
             {
@@ -88,7 +84,6 @@ export default function ProductsPage() {
     const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
         setPage(value)
     }    
-    
     
     
     return (

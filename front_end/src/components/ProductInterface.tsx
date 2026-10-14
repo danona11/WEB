@@ -4,3 +4,5 @@ export default interface Product{
     ProductPrice: number
     ProductStock: number
 }
+
+
