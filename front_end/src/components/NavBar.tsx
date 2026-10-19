@@ -9,6 +9,8 @@ import Menu from '@mui/material/Menu';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import { useNavigate } from 'react-router-dom';
+import { Container } from '@mui/material';
+import {Button} from '@mui/material';
 
 export default function Navbar() {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -45,38 +47,41 @@ export default function Navbar() {
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static" style={{ backgroundColor: '#1976d2' }}>
-        <Toolbar>
-          <Typography
-            variant="h6"
-            noWrap
-            component="div"
-            sx={{ cursor: 'pointer', fontWeight: 'bold' }}
-            onClick={() => nav('/products')} 
-          >
-            FOOTBALL KITS
-          </Typography>
-
-          <Box sx={{ flexGrow: 1 }} />
-
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            
-            <IconButton size="large" color="inherit" onClick={() => nav('/cart')}>
-                <ShoppingCartIcon />
-            </IconButton>
-
-            <IconButton className="user-profile"
-              size="large"
-              edge="end"
-              aria-haspopup="true"
-              onClick={handleProfileMenuOpen}
-              color="inherit"
+      <AppBar position="sticky" style={{ backgroundColor: '#1976d2' }}>
+        <Container>
+          <Toolbar>
+            <Typography
+              variant="h6"
+              noWrap
+              component="div"
+              sx={{ cursor: 'pointer', fontWeight: 'bold' }}
+              onClick={() => nav('/products')} 
             >
-              <AccountCircle />
-            </IconButton>
+              FOOTBALL KITS
+            </Typography>
 
-          </Box>
-        </Toolbar>
+            <Box sx={{ flexGrow: 1 }} />
+
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              
+              <IconButton size="large" color="inherit" onClick={() => nav('/cart')}>
+                  <ShoppingCartIcon />
+              </IconButton>
+
+              <IconButton className="user-profile"
+                size="large"
+                edge="end"
+                aria-haspopup="true"
+                onClick={handleProfileMenuOpen}
+                color="inherit"
+              >
+                <AccountCircle />
+              </IconButton>
+
+            </Box>
+          </Toolbar>
+        </Container>
+        
       </AppBar>
       {renderMenu}
     </Box>

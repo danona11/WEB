@@ -35,9 +35,9 @@ func ProductIndex(ctx *gin.Context) {
 
 	page, _ := strconv.Atoi(pageString)
 
-	offset:= ( page-1 )*5
+	offset:= ( page-1 )*6
 
-	result := initializers.DB_ptr.Limit(5).Offset(offset).Find(&prodsList)//limit of 5 prods per page - pagingtation
+	result := initializers.DB_ptr.Limit(6).Offset(offset).Find(&prodsList)//limit of 6 prods per page - pagingtation
 	if result.Error != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "failed to fetch product"})
 		return

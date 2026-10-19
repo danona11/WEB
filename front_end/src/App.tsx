@@ -4,10 +4,11 @@ import HomePage from './pages/HomePage';
 import SignUpPage from './pages/SignUpPage';
 import PageNotFound from './pages/PageNotFound';
 import ProductsPage from './pages/ProductsPage';
+import CartPage from './pages/CartPage';
 import ProtectedRoutes from './context/ProtectedRoutes';
 import ManageUsersPage from './pages/AdminPages/ManageUsersPage';
 import ManageProductsPage from './pages/AdminPages/ManageProductsPage';
-import NavBar from './components/NavBar' 
+import NavBar from './components/NavBar';
 
 function NavbarLayout() {
   return ( 
@@ -27,6 +28,7 @@ export default function App() {
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/" element={<LoginPage />} />
                 <Route path="/signUp" element={<SignUpPage />} />
+
 
     {
         //protected routes only accessible to users with admin permissions:
@@ -53,11 +55,11 @@ export default function App() {
                         </ProtectedRoutes>
                     }/>
 
-                    {/* <Route path="/cart" element={
+                    <Route path="/cart" element={
                         <ProtectedRoutes isAdminRoute={false}>
                             <CartPage />
                         </ProtectedRoutes>
-                    }/> */}
+                    }/>
 
                     <Route path="/products" element={
                         <ProtectedRoutes isAdminRoute={false}>

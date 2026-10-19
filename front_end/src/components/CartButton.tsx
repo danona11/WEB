@@ -12,10 +12,8 @@ export default function CartButton() {
     return () => clearTimeout(timeout);
   });
   return (
-    <Tooltip title="Click to see loading">
-      <IconButton onClick={() => setLoading(true)} loading={loading}>
-        <ShoppingCartIcon />
-      </IconButton>
-    </Tooltip>
+    <IconButton onClick={() => setLoading(true)} loading={loading}>
+      <ShoppingCartIcon />
+    </IconButton>
   );
 }

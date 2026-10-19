@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import {  useNavigate } from "react-router-dom";
 import { FormEvent, useState } from "react";
 import Alert from '@mui/material/Alert';
 import { Button } from "@mui/material";
@@ -39,7 +39,8 @@ export default function LoginPage() {
             }
 
             else{
-                <Alert severity="error">fetch failed</Alert>
+                <Alert severity="error">login failed</Alert>
+                console.log('fetch failed');
             }               
         }
         
@@ -61,7 +62,8 @@ export default function LoginPage() {
                 setValue={setUserName}
             />
 
-            <br></br>
+            <br/>
+            <br/>
 
             <DebouncedTextField 
                 label="password:"
@@ -69,8 +71,8 @@ export default function LoginPage() {
                 setValue={setPassword}
             />
 
-            <br></br>
-            <br></br>
+            <br/>
+            <br/>
 
             <Button type="submit" variant="contained">
                 login
