@@ -35,10 +35,13 @@ func main() {
 	publicRoutes.POST("/login", controllers.SendLogin)
 
 
-//PROTECTEDROUTES - will activate requireAuth for all autherized requests
+//PROTECTEDROUTES - will activate requireAuth for all authorized requests
 	protectedRoutes := router.Group("/")
 	protectedRoutes.Use(middleware.RequireAuth)
 	protectedRoutes.GET("/validate", controllers.Validate)
+
+	//user controllers:
+	protectedRoutes.POST("/logout", controllers.Logout)
 
 	//products controllers:
 	protectedRoutes.POST("/addProduct", controllers.CreateProduct)

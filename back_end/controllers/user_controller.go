@@ -198,6 +198,17 @@ func Validate(ctx *gin.Context) {
 	})
 }
 
+func Logout(ctx *gin.Context) {
+	// 		cookie: ( name , value , maxAge , path , domain , secure , http-only )
+	ctx.SetCookie( "Authorization" , "" , -1 , "/" , "localhost" , false , true)//the cookie has max age of -1 so the browser will automaticly delete it.
+
+	ctx.JSON(http.StatusOK, gin.H{"msg":"user logged out and cookie deleted"} )
+
+}
+
+
 func DeleteUser(ctx *gin.Context) {
 
 }
+
+

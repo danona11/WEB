@@ -35,6 +35,7 @@ export default function LoginPage() {
             )
 
             if (response.ok) {
+                localStorage.setItem("LocalUserName",userName)
                 nav("/products")
             }
 
