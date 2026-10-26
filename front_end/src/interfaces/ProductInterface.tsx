@@ -3,6 +3,7 @@ export default interface Product{
     ProductName: string
     ProductPrice: number
     ProductStock: number
+    ProductPhotoUrl: string
 }
 
 

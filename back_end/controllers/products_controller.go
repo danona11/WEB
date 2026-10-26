@@ -47,7 +47,6 @@ func ProductIndex(ctx *gin.Context) {
 
 }
 
-// for showing a singular product from search:
 func ShowProduct(ctx *gin.Context) {
 	//getting the products id off the URL:
 	prod_id := ctx.Param("id")

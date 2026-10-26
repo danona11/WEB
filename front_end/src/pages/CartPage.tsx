@@ -103,7 +103,7 @@ export default function CartPage(){
                                 <Card className="prodCard" sx={{ ...ProductCardStyle, backgroundColor: outOfStock ? '#ffcccc' : 'white', opacity: outOfStock ? 0.7 : 1  }}>                                    
                                     <CardMedia  
                                         component="img" 
-                                        image="https://assets.adidas.com/images/w_500,f_auto,q_auto/417cd4eba2904c42b34f7be3521173c1_9366/Liverpool_FC_26-27_Third_Jersey_Authentic_Black_KA6858_HM5.jpg"
+                                        image={item.ProductPhotoUrl ||"https://assets.adidas.com/images/w_500,f_auto,q_auto/417cd4eba2904c42b34f7be3521173c1_9366/Liverpool_FC_26-27_Third_Jersey_Authentic_Black_KA6858_HM5.jpg"}
                                         alt=""
                                         sx={{ height: 300, objectFit:'contain'}}
                                     />

@@ -4,6 +4,7 @@ export default interface CartItem{
     ProductPrice: number
     ProductStock: number
     ProductAmount: number
+    ProductPhotoUrl: string
 }
 
 
