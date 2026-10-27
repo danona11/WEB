@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import {Box,Button,Grid,Pagination,Alert,Stack,Typography, Paper, Card , ThemeProvider, createTheme, CardMedia, CardContent, CardActions, IconButton, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, List} from "@mui/material";
-import CartItem from "../interfaces/CartItemInterface"
+import Product from "../interfaces/ProductInterface"
 import { getLocalUserName} from '../utils/Auth'
 import { formatProductName } from '../utils/Format'
 import RemoveIcon from '@mui/icons-material/Remove'
@@ -13,17 +13,17 @@ import RemoveShoppingCartIcon from '@mui/icons-material/RemoveShoppingCart';
 import DialogPopUp from "../components/DialogPopUp"
 
 export default function CartPage(){
-    const [itemsList , setItemsList] = useState<CartItem[]>([]);    
-    const [itemToDelete , setItemToDelete] = useState < CartItem | null > (null)    //null when the dialog isn't popped up
+    const [itemsList , setItemsList] = useState<Product[]>([]);    
+    const [itemToDelete , setItemToDelete] = useState < Product | null > (null)    //null when the dialog isn't popped up
     const [popup,setPopup] = useState<boolean>(false)   
-
+    const [outOfStock , SetOutOfStock] = useState<boolean>(false)
 
     const LocalUserName = getLocalUserName()
     const cartID = `${LocalUserName}'s_cart`
 
     let checkOutTotal = 0
     for (const item of itemsList){
-        checkOutTotal+=item.ProductPrice*item.ProductAmount
+        checkOutTotal+=item.ProductPrice*item.AmountInCart
     }
 
 
@@ -45,20 +45,29 @@ export default function CartPage(){
     } , [])
 
 
-    const handleChangeAmountInCart = ( item:CartItem , change:number ) => {
+    const handleChangeAmountInCart = ( item:Product , change:number ) => {
 
-        if( item.ProductAmount <=1 && change<0 ){
+        if( item.AmountInCart+change <= 0 ){
             setItemToDelete(item)
             return
         }
         
-        const newList = itemsList.map( (cartItem) =>{
-            if(cartItem.ProductID === item.ProductID){
+        
+
+        const newList = itemsList.map( (Product) =>{
+            if(Product.ProductID === item.ProductID){
+
+                if( item.AmountInCart + change >  item.ProductStock){
+                    SetOutOfStock(true)
+                    return({  
+                        ...Product , AmountInCart: item.ProductStock
+                    })
+                }
                 return({  
-                    ...cartItem , ProductAmount: item.ProductAmount+change 
+                    ...Product , AmountInCart: item.AmountInCart+change
                 })
             }
-            return cartItem
+            return Product
         })
         
         localStorage.setItem(cartID, JSON.stringify(newList))
@@ -96,7 +105,6 @@ export default function CartPage(){
                 { itemsList.length >0 ? (
                     
                     itemsList.map( (item) => {
-                        const outOfStock = item.ProductStock === 0 
 
                         return(
                             <Grid size={{ xs: 12, sm: 6, md: 4 }} key={item.ProductID}>
@@ -116,7 +124,7 @@ export default function CartPage(){
                                         <br/>
 
                                         <Typography variant="h6" color={outOfStock ? "error" : "text.secondary"}>
-                                            amount in cart:{item.ProductAmount}
+                                            amount in cart:{item.AmountInCart}
                                         </Typography>
 
                                         {/* when clicking the button the item to delete changes from null to the item - so the dialog box pops up to confirm deletion */}
@@ -131,7 +139,7 @@ export default function CartPage(){
                                         <br/>
 
                                         <Typography variant="h6" sx={{textAlign:'center' , textDecoration: outOfStock ? 'line-through' : 'none' }}>
-                                            { (item.ProductPrice*item.ProductAmount).toFixed(2) } ILS
+                                            { (item.ProductPrice*item.AmountInCart).toFixed(2) } ILS
                                         </Typography>
                                                                                                                             
                                     </CardContent>  
@@ -144,10 +152,10 @@ export default function CartPage(){
                                             </IconButton>
 
                                             <Typography variant="h6">
-                                                {item.ProductAmount}
+                                                {item.AmountInCart}
                                             </Typography>
 
-                                            <IconButton onClick={ () => ( handleChangeAmountInCart( item , 1 ) ) } disabled={ item.ProductAmount>=item.ProductStock || outOfStock}  >
+                                            <IconButton onClick={ () => ( handleChangeAmountInCart( item , 1 ) ) } disabled={ item.AmountInCart>=item.ProductStock || outOfStock}  >
                                                 <AddIcon />
                                             </IconButton>
                                         </Box>
@@ -175,7 +183,7 @@ export default function CartPage(){
 
             <IconButton sx={{fontSize:"small"}} onClick={()=> setPopup(true) }
             >   
-            CLEAR CART
+                CLEAR CART
                 <RemoveShoppingCartIcon fontSize="medium"/>
             </IconButton>
 

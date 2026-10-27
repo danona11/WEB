@@ -139,8 +139,12 @@ func SendLogin(ctx *gin.Context) {
 	ctx.SetSameSite(http.SameSiteLaxMode)
 	ctx.SetCookie("Authorization", tokenString, 1800, "/", "", false, true) //30 minutes, httponly - onlye the browser and the server can read
 
-	ctx.JSON(http.StatusOK, gin.H{"message": "cookie"})
-
+	ctx.JSON(http.StatusOK, 
+		gin.H{
+			"message": "cookie",
+			"userName":login_user.UserName,
+			"perrmissions":login_user.Permissions,
+		})
 }
 
 func SendSignUp(ctx *gin.Context) {

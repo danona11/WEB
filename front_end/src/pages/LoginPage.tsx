@@ -4,6 +4,9 @@ import Alert from '@mui/material/Alert';
 import { Button } from "@mui/material";
 import DebouncedTextField from "../components/DebouncedTextField"
 import { Typography } from "@mui/material";
+import { setUser } from "../ReduxStore/UserSlice";
+import { useAppSelector, useAppDispatch } from "../ReduxStore/Hooks";
+import { useDispatch } from "react-redux";
 
 export default function LoginPage() {
     
@@ -12,7 +15,9 @@ export default function LoginPage() {
 
 //Link will send the client straight to the next page, without waiting for the responce of the BE
 //NAV: when pressing a button for fetching
-    const nav = useNavigate();  
+    const nav = useNavigate() 
+    const dispatch = useAppDispatch()
+
 
     const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
         
@@ -20,7 +25,7 @@ export default function LoginPage() {
         
         // sending the data to the BackEnd in json :
         try{
-            const response = await fetch( `${import.meta.env.VITE_API_URL}/login`, 
+            const responce = await fetch( `${import.meta.env.VITE_API_URL}/login`, 
                 {
                     method: "POST" ,
                     headers: { "Content-Type" : "application/json"},
@@ -34,9 +39,12 @@ export default function LoginPage() {
                     credentials: "include"
                 }   
             )
+            
+            const data = await responce.json()  //login controller sends a json with username and perrmissions
 
-            if (response.ok) {
-                localStorage.setItem("LocalUserName",userName)
+            if (responce.ok) {
+
+                dispatch( setUser({ userName: data.userName , permissions: data.perrmissions }) ) 
                 nav("/products")
             }
 

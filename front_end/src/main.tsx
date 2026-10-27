@@ -1,16 +1,17 @@
 import { StrictMode } from 'react'
+import ReactDOM from 'react-dom/client'
 import { createRoot } from 'react-dom/client'
-
 import './index.css'
 import App from './App'
-import ContextProvider from './context/ContextProvider'
+import { ReduxStore } from './ReduxStore/ReduxStore'
+import { Provider } from 'react-redux'
 
 
-createRoot(document.getElementById('root')!).render(
-  <ContextProvider>
-    <App />
-  </ContextProvider>
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <StrictMode>
+      <Provider store={ReduxStore}>
+          <App />
+      </Provider>
+  </StrictMode>
+    
 )
-
-
-// validate the user has a cookie - if not send to unauth user

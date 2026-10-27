@@ -27,17 +27,16 @@ func CreateProduct(ctx *gin.Context) {
 
 }
 
-
 func ProductIndex(ctx *gin.Context) {
 	var prodsList []modules.Product
 
-	pageString := ctx.Param("page")//take the page num from the url
+	pageString := ctx.Param("page") //take the page num from the url
 
 	page, _ := strconv.Atoi(pageString)
 
-	offset:= ( page-1 )*6
+	offset := (page - 1) * 6
 
-	result := initializers.DB_ptr.Limit(6).Offset(offset).Find(&prodsList)//limit of 6 prods per page - pagingtation
+	result := initializers.DB_ptr.Limit(6).Offset(offset).Find(&prodsList) //limit of 6 prods per page - pagingtation
 	if result.Error != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "failed to fetch product"})
 		return
@@ -63,7 +62,6 @@ func ShowProduct(ctx *gin.Context) {
 	ctx.JSON(200, gin.H{"Product": prod})
 }
 
-
 func UpdateProduct(ctx *gin.Context) {
 	//getting the products id off the URL:
 	prod_id := ctx.Param("id")
@@ -72,7 +70,7 @@ func UpdateProduct(ctx *gin.Context) {
 	ctx.Bind(&upd_prod)
 
 	var old_prod modules.Product
-	
+
 	//select product from where old_prod.id = prod_id:
 	result := initializers.DB_ptr.First(&old_prod, prod_id)
 	if result.Error != nil {
@@ -88,7 +86,6 @@ func UpdateProduct(ctx *gin.Context) {
 
 	ctx.JSON(200, gin.H{"product": old_prod})
 }
-
 
 func DeleteProduct(ctx *gin.Context) {
 	//getting the products id off the URL:

@@ -10,6 +10,7 @@ import ManageUsersPage from './pages/AdminPages/ManageUsersPage';
 // import ManageProductsPage from './pages/AdminPages/ManageProductsPage';
 import NavBar from './components/NavBar';
 
+
 function NavbarLayout() {
   return ( 
   <>

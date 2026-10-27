@@ -9,7 +9,8 @@ import DialogPopUp from "../components/DialogPopUp"
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import ManageProductsIcon from '@mui/icons-material/Inventory';
 import AccountCircle from '@mui/icons-material/AccountCircle';
-
+import { useAppSelector, useAppDispatch } from "../ReduxStore/Hooks";
+import { clearUser } from "../ReduxStore/UserSlice";
 
 export default function NavBar() {
 
