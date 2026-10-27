@@ -15,7 +15,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func GetRequests(ctx *gin.Context) { //gin.context = all the info about the request
+func GetUsers(ctx *gin.Context){ //gin.context = all the info about the request
 
 	var users_list []modules.User
 
@@ -23,11 +23,12 @@ func GetRequests(ctx *gin.Context) { //gin.context = all the info about the requ
 	result := initializers.DB_ptr.Find(&users_list)
 
 	if result.Error != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Find opp in the db didnt work"})
 		return
 	}
 
 	//will return the users_list in json form:
-	ctx.IndentedJSON(http.StatusOK, users_list)
+	ctx.JSON(http.StatusOK, gin.H{"users":users_list })
 
 }
 
@@ -156,7 +157,7 @@ func SendSignUp(ctx *gin.Context) {
 	}
 
 	//bcrypt will hash the users passwords in the db: will generate a 22dig salt, and encrypt the password to a combined string of the both: (salt+hash)
-	hash, err := bcrypt.GenerateFromPassword([]byte(userDetails.Password), 10) //10 cost factor repressents how slow the hashing alg will be
+	hash, err := bcrypt.GenerateFromPassword([]byte(userDetails.Password), 10) //10(cost)- how slow the hashing alg will be
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "failed to hash the password"})
 		return
@@ -199,9 +200,9 @@ func Validate(ctx *gin.Context) {
 }
 
 func Logout(ctx *gin.Context) {
+
 	// 		cookie: ( name , value , maxAge , path , domain , secure , http-only )
 	ctx.SetCookie( "Authorization" , "" , -1 , "/" , "localhost" , false , true)//the cookie has max age of -1 so the browser will automaticly delete it.
-
 	ctx.JSON(http.StatusOK, gin.H{"msg":"user logged out and cookie deleted"} )
 
 }
@@ -210,5 +211,3 @@ func Logout(ctx *gin.Context) {
 func DeleteUser(ctx *gin.Context) {
 
 }
-
-

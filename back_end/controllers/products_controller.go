@@ -72,7 +72,7 @@ func UpdateProduct(ctx *gin.Context) {
 	ctx.Bind(&upd_prod)
 
 	var old_prod modules.Product
-
+	
 	//select product from where old_prod.id = prod_id:
 	result := initializers.DB_ptr.First(&old_prod, prod_id)
 	if result.Error != nil {

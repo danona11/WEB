@@ -3,6 +3,7 @@ import { FormEvent, useState } from "react";
 import Alert from '@mui/material/Alert';
 import { Button } from "@mui/material";
 import DebouncedTextField from "../components/DebouncedTextField"
+import { Typography } from "@mui/material";
 
 export default function LoginPage() {
     
@@ -10,7 +11,7 @@ export default function LoginPage() {
     const [password, setPassword] = useState("");
 
 //Link will send the client straight to the next page, without waiting for the responce of the BE
-//NAV: when pressing a button for fetching 
+//NAV: when pressing a button for fetching
     const nav = useNavigate();  
 
     const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
@@ -52,19 +53,16 @@ export default function LoginPage() {
     }
 
     return (                
-        <form className="loginpageUI" onSubmit={handleLogin} style= {{maxWidth: '400px', margin: '0 auto', padding: '20px' , textAlign: 'center'}}>
+        <form className="login-page" onSubmit={handleLogin} style= {{maxWidth: '400px', margin: '0 auto', padding: '20px' , textAlign: 'center'}}>
             
-            <h1>Football Kits</h1>
-            <h3>Log in</h3>
-
+            <Typography variant="h2" align="center">Kits page</Typography>
+            <Typography variant="h5" align="center">Log-In</Typography>
+            
             <DebouncedTextField 
                 label="user name:"
                 type="text"
                 setValue={setUserName}
             />
-
-            <br/>
-            <br/>
 
             <DebouncedTextField 
                 label="password:"
@@ -76,12 +74,15 @@ export default function LoginPage() {
             <br/>
 
             <Button type="submit" variant="contained">
-                login
+                log-in
             </Button>
 
-            <p> don't have an account? </p>
+            <br/>
+            <br/>
+
+            <Typography variant="body1" align="center">Don't have An Account?</Typography>
             <Button onClick={()=>nav("/signup")} variant="contained">
-                signup
+                sign-up
             </Button>
         </form>
 

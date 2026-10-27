@@ -2,6 +2,9 @@ import { useNavigate } from "react-router-dom";
 import { FormEvent, useState } from "react";
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
+import { Typography } from "@mui/material";
+import { Button } from "@mui/material";
+import DebouncedTextField from "../components/DebouncedTextField"
 
 
 export default function SignUpPage() {
@@ -53,32 +56,45 @@ export default function SignUpPage() {
     }
 
     return (    
-        <div className="signup-page" style={{textAlign: 'center', marginTop: '50px'}}>
-            <h1>Football Kits</h1>
-            <h3>Sign Up</h3>
-
-            <form onSubmit={handleSignUp} style= {{marginLeft: '20px', marginRight: '20px'}}>
-
-                <label>username: </label>
-                <input type="text" value={userName} onChange={ (event) => setUserName(event.target.value) }/>
-                <br></br>
-
-                <label>email address: </label>
-                <input type="text" value={email} onChange={ (event) => setEmail(event.target.value) }/>
-                <br></br>
-
-                <label>password: </label>
-                <input type="password" value={password} onChange={ (event) => setPassword(event.target.value) }/>
-                        
-                <br></br>
-                <br></br>
-
-                <button type="submit">Sign Up</button>
-
-            </form>
-            <br></br>
-
+        <form className="signup-page" onSubmit={handleSignUp} style= {{maxWidth: '400px', margin: '0 auto', padding: '20px' , textAlign: 'center'}}>
+            <Typography variant="h2" align="center">Kits page</Typography>
+            <Typography variant="h5" align="center">Sign-Up</Typography>
             
-        </div>
+            <br/>
+            
+            <DebouncedTextField 
+                label="user name:"
+                type="text"
+                setValue={setUserName}
+            />
+            
+            <DebouncedTextField 
+                label="email:"
+                type="text"
+                setValue={setEmail}
+            />
+
+            <DebouncedTextField 
+                label="password:"
+                type="password"
+                setValue={setPassword}
+            />
+
+            <br/>
+            <br/>
+
+            <Button type="submit" variant="contained">
+                sign-up
+            </Button>
+
+            <br/>
+            <br/>
+
+            <Typography variant="body1" align="center">Already Have an Account?</Typography>
+            <Button onClick={()=>nav("/login")} variant="contained">
+                log-in
+            </Button>
+
+        </form>
     );
 }

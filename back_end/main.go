@@ -42,6 +42,8 @@ func main() {
 
 	//user controllers:
 	protectedRoutes.POST("/logout", controllers.Logout)
+	protectedRoutes.GET("/users", controllers.GetUsers)
+
 
 	//products controllers:
 	protectedRoutes.POST("/addProduct", controllers.CreateProduct)

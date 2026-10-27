@@ -5,5 +5,3 @@ export default interface Product{
     ProductStock: number
     ProductPhotoUrl: string
 }
-
-

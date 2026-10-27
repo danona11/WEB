@@ -19,6 +19,7 @@ const cardTheme = createTheme({
 })
 
 export default function ProductsPage() {
+
     const [productsList, setProductsList] = useState<Product[]>([])
     const [page, setPage] = useState<number>(1)
     const [amountToAdd, setAmountToAdd] = useState<Record<number,number>>({})   //list of all cards in page- each card has { key(prodID): value(amountToAdd) }
@@ -28,14 +29,14 @@ export default function ProductsPage() {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const response = await fetch(`${import.meta.env.VITE_API_URL}/products/page/${page}`,
+                const responce = await fetch(`${import.meta.env.VITE_API_URL}/products/page/${page}`,
                 {
                     method: "GET",
                     credentials: "include"
                 })
 
-                if (response.ok) {
-                    const data = await response.json()
+                if (responce.ok) {
+                    const data = await responce.json()
                     setProductsList(data.Products)
 
                 } else {
@@ -106,9 +107,7 @@ export default function ProductsPage() {
 
     return (
         <Box className="productsPageBox" sx={{ flex:'center' , marginTop: '30px' }}>
-            <Typography variant="h2" align="center">
-                Kits page
-            </Typography>
+            <Typography variant="h2" align="center">Kits page</Typography>
 
             <Grid container spacing={3} sx={ GridContainerStyle }>
                 {productsList.length > 0 ? (
