@@ -27,14 +27,18 @@ func CreateProduct(ctx *gin.Context) {
 
 }
 
-func ProductIndex(ctx *gin.Context) {
+func ProductsPagination(ctx *gin.Context) {
 	var prodsList []modules.Product
+	var totalProducts int64
 
 	pageString := ctx.Param("page") //take the page num from the url
-
-	page, _ := strconv.Atoi(pageString)
-
-	offset := (page - 1) * 6
+	page, err := strconv.Atoi(pageString)
+	if err != nil || page < 1 {		//incase of an uknown page number - go to page 1
+        page = 1
+    }
+	
+	offset := (page - 1) * 6	//the first prod in the page
+	initializers.DB_ptr.Model(&modules.Product{}).Count(&totalProducts)	//total products in the DB
 
 	result := initializers.DB_ptr.Limit(6).Offset(offset).Find(&prodsList) //limit of 6 prods per page - pagingtation
 	if result.Error != nil {
@@ -42,8 +46,12 @@ func ProductIndex(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(200, gin.H{"Products": prodsList})
-
+	maxPage := 1
+    if totalProducts > 0 {
+        maxPage = int( (totalProducts + 5) /6 )
+	}
+	
+	ctx.JSON(200, gin.H{ "products": prodsList , "maxPage": maxPage })
 }
 
 func ShowProduct(ctx *gin.Context) {

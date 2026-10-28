@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import {Box,Button,Grid,Pagination,Alert,Stack,Typography, Paper, Card , ThemeProvider, createTheme, CardMedia, CardContent, CardActions, IconButton} from "@mui/material";
+import {Box,Button,Grid,Pagination,Stack,Typography, Card , CardMedia, CardContent, CardActions, IconButton} from "@mui/material";
 import AddShoppingCartOutlinedIcon from '@mui/icons-material/AddShoppingCartOutlined';
 import Product from "../interfaces/ProductInterface";
 import { getLocalUserName } from '../utils/Auth'
@@ -16,8 +16,25 @@ export default function ProductsPage() {
     const [productsList, setProductsList] = useState<Product[]>([])
     const [page, setPage] = useState<number>(1)
     const [amountToAdd, setAmountToAdd] = useState<Record<number,number>>({})   //list of all cards in page- each card has { key(prodID): value(amountToAdd) }
-    const [amountInCart, setAmountInCart] = useState<number>(0)
+    const [myCartList, setMyCartList ] = useState<Product[]>([])
+    const [maxPage, setMaxPage] = useState<number>(1);
+    
     const nav = useNavigate();
+
+    useEffect(() => {   //get users cart only on first run
+        const LocalUserName = getLocalUserName()
+        const cartID = `${LocalUserName}'s_cart`
+        const myCart = localStorage.getItem(cartID)
+
+        if(myCart){
+            try{
+                setMyCartList( JSON.parse(myCart) )//users cart products list
+            }catch(err){
+                console.error("failed to find users cart" , err)
+            }
+        }
+    },[])
+
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -30,15 +47,12 @@ export default function ProductsPage() {
 
                 if (responce.ok) {
                     const data = await responce.json()
-                    setProductsList(data.Products)
-
-                } else {
-                    <Alert severity="error">failed to fetch the products</Alert>
+                    setProductsList(data.products)
+                    setMaxPage(data.maxPage)
                 }
 
             } catch (error) {
                 console.error("network error", error);
-                <Alert severity="error">request not avilable rn</Alert>
             }
         }
 
@@ -49,38 +63,43 @@ export default function ProductsPage() {
 
         const LocalUserName = getLocalUserName()
         const cartID = `${LocalUserName}'s_cart`
-        const myCart = localStorage.getItem(cartID)
-        const cart = myCart ? JSON.parse(myCart) : []
+        
+        const amountInCart = AmountInCartByID(prod.ProductID)
 
-        const amountToAdd = GetAmountToAdd(prod.ProductID)
-        const existsIndex = cart.findIndex( (exists: Product) => exists.ProductID === prod.ProductID )
+        let amountToAdd = AmountToAddByID(prod.ProductID)
+
+        const updatedStock = prod.ProductStock - amountInCart    //the stock left, adding the amount user has in his cart - cant add to cart more than there is in stock
+
+        if ( updatedStock<=0 ){
+            return;
+        }
+
+        if( amountToAdd > updatedStock ) amountToAdd = updatedStock
+                
+        const existsIndex = myCartList.findIndex( (exists: Product) => exists.ProductID === prod.ProductID )
+        let updatedCart : Product[] = []
 
         if ( existsIndex >= 0 ){
-            setAmountInCart( cart[existsIndex].ProductAmount )
-            if( prod.ProductStock >= amountInCart + amountToAdd ){
-
-                cart[existsIndex].ProductAmount+= amountToAdd  
-                setAmountInCart( cart[existsIndex].ProductAmount )
-            }
+                updatedCart = myCartList.map(
+                    (item, index) => (index === existsIndex) ? { ...item, AmountInCart: item.AmountInCart + amountToAdd } : item );
         }else {
-            cart.push({
-                ProductID:      prod.ProductID,
-                ProductName:    prod.ProductName,
-                ProductPrice:   prod.ProductPrice,
-                ProductStock:   prod.ProductStock,
-                AmountInCart:   amountToAdd,
-                ProductPhotoUrl:prod.ProductPhotoUrl
-            })
-            setAmountInCart( amountToAdd )
+            updatedCart = [
+                ...myCartList,
+                {
+                    ProductID:      prod.ProductID,
+                    ProductName:    prod.ProductName,
+                    ProductPrice:   prod.ProductPrice,
+                    ProductStock:   prod.ProductStock,
+                    AmountInCart:   amountToAdd,
+                    ProductPhotoUrl:prod.ProductPhotoUrl
+                }
+            ]
         }
-        
-        localStorage.setItem( cartID , JSON.stringify(cart) )
+        setMyCartList(updatedCart)
+        localStorage.setItem( cartID , JSON.stringify(updatedCart) )
         console.log(`${prod.ProductName} added to cart`)
 
-        setAmountToAdd( (old) => ({
-            ...old , [prod.ProductID]:1
-        })
-        )
+        setAmountToAdd( (old) => ({ ...old , [prod.ProductID]:1 }) )
     }
     
     const handlePageChange = (event:React.ChangeEvent<unknown> , value:number) =>{
@@ -88,12 +107,18 @@ export default function ProductsPage() {
     }  
     
     //insert the amount to add into the list, default:1
-    const GetAmountToAdd = ( prodID:number ) =>{    
+    const AmountToAddByID = ( prodID:number ) =>{   
         return amountToAdd[prodID] || 1
     }
     
+    //product amount in cart by id
+    const AmountInCartByID = ( prodID:number ) =>{
+        const found = myCartList.find( (item) => item.ProductID === prodID )
+        return found ? (found.AmountInCart) : 0
+    }
+    
     const handleChangeAmountToAdd = ( prodID:number , update:number ) =>{
-        const oldAmountToAdd = GetAmountToAdd(prodID)
+        const oldAmountToAdd = AmountToAddByID(prodID)
         const newAmountToAdd = (oldAmountToAdd + update)
         setAmountToAdd( (old) => ({
             ...old , [prodID]:newAmountToAdd
@@ -108,13 +133,15 @@ export default function ProductsPage() {
             <Grid container spacing={3} sx={ GridContainerStyle }>
                 {productsList.length > 0 ? (
                     productsList.map( (prod) => {  
-
-                        const outOfStock = ( prod.ProductStock === 0 )
-                        const amountNow = GetAmountToAdd(prod.ProductID)
+                        const productAmountInCart = AmountInCartByID(prod.ProductID)
+                        const updatedStock = prod.ProductStock - productAmountInCart
+                        const outOfStock = ( prod.ProductStock === 0 )  //when there is no more stock
+                        const maxedOutInCart = updatedStock <= 0        //when the user has the rest of the remaining stock already in his cart
+                        const amountToAddNow = AmountToAddByID(prod.ProductID)
 
                         return(
                             <Grid size={{ xs: 12, sm: 6, md: 4 }} key={prod.ProductID}>                                
-                                <Card className="prodCard" sx={{ ...ProductCardStyle , backgroundColor: outOfStock ? '#ffcccc' : 'white', opacity: outOfStock ? 0.7 : 1  }}>                                    
+                                <Card className="prodCard" sx={{ ...ProductCardStyle , backgroundColor: (outOfStock || maxedOutInCart) ? '#ffebee' : 'white', opacity: outOfStock ? 0.7 : 1  }}>                                    
                                     <CardMedia  
                                         component="img" 
                                         image={prod.ProductPhotoUrl || "https://i.pinimg.com/736x/74/49/9f/74499f7623bbe946867f791f863a4f87.jpg"} 
@@ -134,14 +161,14 @@ export default function ProductsPage() {
 
                                         <br/>
 
-                                        <Typography variant="h6" color={outOfStock ? "error" : "text.secondary"}>
-                                            amount in cart:{amountInCart}
+                                        <Typography variant="h6">
+                                            amount in cart:{productAmountInCart}
                                         </Typography>
                                         
                                         <br/>
 
-                                        <Typography variant="h6" color={outOfStock ? "error" : "text.secondary"}>
-                                            amount left:{prod.ProductStock}
+                                        <Typography variant="h6" color={maxedOutInCart ? "error" : "text.secondary"}>
+                                            stock left:{ prod.ProductStock }
                                         </Typography>
 
 
@@ -149,27 +176,31 @@ export default function ProductsPage() {
 
                                     <CardActions>
                                         <Box sx={{display:"flex" , flexDirection:'row'}}>   
-                                            <IconButton onClick={ () => ( handleChangeAmountToAdd( prod.ProductID , -1 ) ) } disabled={ amountNow <= 1 }>
+                                            <IconButton onClick={ () => ( handleChangeAmountToAdd( prod.ProductID , -1 ) ) } disabled={ (amountToAddNow <= 1) || (maxedOutInCart) }>
                                                 <RemoveIcon />
                                             </IconButton>
 
                                             <Typography variant="h6" sx={{textAlign:'center'}}>
-                                                {amountNow}
+                                                {amountToAddNow}
                                             </Typography>
 
-                                            <IconButton onClick={ () => ( handleChangeAmountToAdd( prod.ProductID , 1 ) ) } disabled={ amountNow >= prod.ProductStock || outOfStock }  >
+                                            <IconButton onClick={ () => ( handleChangeAmountToAdd( prod.ProductID , 1 ) ) } disabled={ ( amountToAddNow>= updatedStock ) || (maxedOutInCart) }  >
                                                 <AddIcon />
                                             </IconButton>
                                         </Box>
 
                                         <Button 
                                             variant="contained" 
-                                            color={ outOfStock ? "inherit" : "primary" }
+                                            color={ (outOfStock || maxedOutInCart) ? "inherit" : "primary" }
                                             endIcon={<AddShoppingCartOutlinedIcon />} 
                                             onClick={ () => addToCart(prod) }
-                                            disabled={ outOfStock }
+                                            disabled={ outOfStock || maxedOutInCart }
                                         >
-                                            { outOfStock ? "OUT OF STOCK" : "add to cart" }
+                                            { 
+                                                outOfStock ? "OUT OF STOCK" :
+                                                maxedOutInCart ? "STOCK MAXED OUT IN CART" :
+                                                "add to cart"
+                                            }
                                         </Button> 
                                     </CardActions>                
                                 </Card>
@@ -185,8 +216,8 @@ export default function ProductsPage() {
 
             <Box sx={{ display:'flex' , justifyContent: 'center', mt: 4, mb: 4}}>
                 <Stack spacing={2}>
-                    <Pagination 
-                        count={3} 
+                    <Pagination
+                        count={maxPage} 
                         page={page} 
                         onChange={handlePageChange} 
                         color="primary" 
