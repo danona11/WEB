@@ -1,6 +1,5 @@
 import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
 import LoginPage from './pages/LoginPage';
-import HomePage from './pages/HomePage';
 import SignUpPage from './pages/SignUpPage';
 import PageNotFound from './pages/PageNotFound';
 import ProductsPage from './pages/ProductsPage';
@@ -9,16 +8,18 @@ import ProtectedRoutes from './context/ProtectedRoutes';
 import ManageUsersPage from './pages/AdminPages/ManageUsersPage';
 // import ManageProductsPage from './pages/AdminPages/ManageProductsPage';
 import NavBar from './components/NavBar';
+import LoginPopup from "./components/popups/LoginPopup";
 
 
 function NavbarLayout() {
-  return ( 
-  <>
-    <NavBar />
-        <div style={{ padding: '20px' }}>
-            <Outlet /> 
-        </div>
-    </>)
+    return ( 
+        <>
+            <NavBar />
+            <div style={{ padding: '20px' }}>
+                <Outlet /> 
+            </div>
+        </>
+    )
 }
 
 export default function App() {
@@ -32,9 +33,9 @@ export default function App() {
 
 
     {
-        //protected routes only accessible to users with admin permissions:
+        //protected admin routes only accessible to users with admin permissions:
     }               
-                <Route element={<NavbarLayout/>}>
+                <Route element={<NavbarLayout/>}>   {/*navbar will apear in all of the protectedRoutes*/}
 
                     <Route  path="/manageUsers" element={
                         <ProtectedRoutes isAdminRoute={false}>
@@ -48,14 +49,8 @@ export default function App() {
                         </ProtectedRoutes>
                     }/>    */}
     {
-        //protected routes accessible to all users who logged in:
+        //protected non-admin routes accessible to all users who logged in:
     }
-                    <Route path="/home" element={
-                        <ProtectedRoutes isAdminRoute={false}>
-                            <HomePage />
-                        </ProtectedRoutes>
-                    }/>
-
                     <Route path="/cart" element={
                         <ProtectedRoutes isAdminRoute={false}>
                             <CartPage />
@@ -72,6 +67,9 @@ export default function App() {
                 
                 <Route path="*" element={<PageNotFound />} />   
             </Routes>
+
+            {/* global routes: work from any wher in the app*/}
+            <LoginPopup />
         </BrowserRouter>
     );
 }

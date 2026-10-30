@@ -4,8 +4,8 @@ import Alert from '@mui/material/Alert';
 import { Button } from "@mui/material";
 import DebouncedTextField from "../components/DebouncedTextField"
 import { Typography } from "@mui/material";
-import { setUser } from "../ReduxStore/UserSlice";
-import { useAppSelector, useAppDispatch } from "../ReduxStore/Hooks";
+import { setUser } from "../Redux/ReduxUserSlice";
+import { useAppSelector, useAppDispatch } from "../Redux/ReduxHooks";
 import { useDispatch } from "react-redux";
 
 export default function LoginPage() {
@@ -50,7 +50,7 @@ export default function LoginPage() {
 
             else{
                 <Alert severity="error">login failed</Alert>
-                console.log('fetch failed');
+                console.log('invalid username or password');
             }               
         }
         

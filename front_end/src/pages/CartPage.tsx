@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import {Box,Grid,Typography, Card, CardMedia, CardContent, CardActions, Button , IconButton} from "@mui/material";
 import Product from "../interfaces/ProductInterface"
-import { getLocalUserName} from '../utils/Auth'
+import { GetLocalUserName } from '../utils/handleLocalUser'
 import { formatProductName } from '../utils/Format'
 import RemoveIcon from '@mui/icons-material/Remove'
 import AddIcon from '@mui/icons-material/Add'
@@ -10,14 +10,15 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import { ProductCardStyle } from "../styles/CardStyle";
 import { GridContainerStyle } from "../styles/GridStyle";
 import RemoveShoppingCartIcon from '@mui/icons-material/RemoveShoppingCart';
-import DialogPopUp from "../components/DialogPopUp"
+import DialogPopUp from "../components/popups/DialogPopUp"
 
 export default function CartPage(){
+    
     const [itemsList , setItemsList] = useState<Product[]>([]);    
     const [itemToDelete , setItemToDelete] = useState < Product | null > (null)    //null when the dialog isn't popped up
     const [popup,setPopup] = useState<boolean>(false)   
 
-    const LocalUserName = getLocalUserName()
+    const LocalUserName = GetLocalUserName()
     const cartID = `${LocalUserName}'s_cart`
 
     let checkOutTotal = 0
@@ -27,7 +28,7 @@ export default function CartPage(){
 
 
     useEffect( () =>{
-        const LocalUserName = getLocalUserName()
+        const LocalUserName = GetLocalUserName()
         const cartID = `${LocalUserName}'s_cart`
         const myCart = localStorage.getItem(cartID)
         

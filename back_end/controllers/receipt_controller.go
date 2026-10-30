@@ -11,92 +11,89 @@ import (
 )
 
 type CartProduct struct {
-	ProductID     uint `json:"product_id"`
-	ProductAmount uint `json:"product_amount"`
+	ProductID   	uint
+	AmountInCart	uint
 }
 
 func CreateReceipt(ctx *gin.Context) {
 
 	userInfo, exists := ctx.Get("user")
 	if !exists {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "user not authorized"})
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "user unauthorized"})
 		return
 	}
-
-	CartUser := userInfo.(modules.User)
+	var user modules.User = userInfo.(modules.User)
 
 	var cartList []CartProduct
-
 	errBind := ctx.Bind(&cartList)
 	if errBind != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid cart"})
 		return
 	}
 
-	errTrans := initializers.DB_ptr.Transaction(func(tx *gorm.DB) error {
+//an sql transaction that checks the stock after the order - return err will fallback , otherwise commit
+	errTransaction := initializers.DB_ptr.Transaction( 
+		func(trCtx *gorm.DB) error {	
+			
+			var recSumPrice float64 = 0
 
-		newRec := modules.Receipt{UserID: CartUser.UserID, SumPrice: 0}
-
-		errCreate := tx.Create(&newRec).Error
-		if errCreate != nil {
-			return errCreate
-		}
-
-		var recSumPrice float64 = 0
-
-		for _, cartItem := range cartList {
-
-			var prod modules.Product
-
-			errFirst := tx.First(&prod, cartItem.ProductID).Error
-			if errFirst != nil {
-				return errors.New("product not found in the DB")
+			newRec := modules.Receipt{
+				UserID: user.UserID, 
+				SumPrice: recSumPrice,
 			}
 
-			if cartItem.ProductAmount > prod.ProductStock {
-				return errors.New("product does not have enough stock for the amount you want")
+			if errCreate := trCtx.Create(&newRec).Error; errCreate != nil {
+				return errCreate													//rollback
 			}
 
-			prod.ProductStock -= cartItem.ProductAmount
-			errSave := tx.Save(&prod).Error
+			for _, cartItem := range cartList {
+
+				var prod modules.Product
+
+				errFirst := trCtx.First(&prod, cartItem.ProductID).Error
+				if errFirst != nil {
+					return errors.New("product not found in the DB")				//roolback
+				}
+
+				if cartItem.AmountInCart > prod.ProductStock {
+					return errors.New("product stock lower than amount bought")		//rollback
+				}
+
+				prod.ProductStock -= cartItem.AmountInCart
+				errSave := trCtx.Save(&prod).Error
+				if errSave != nil {	
+					return errSave													//rollback
+				}
+
+				newRecItem := modules.ReceiptProductsList{
+					ReceiptID:     newRec.ReceiptID,
+					ProductID:     prod.ProductID,
+					AmountInCart: cartItem.AmountInCart,
+					ProductPrice:  prod.ProductPrice,
+				}
+
+				result := trCtx.Create(&newRecItem).Error
+				if result != nil {
+					return result
+				}
+
+				recSumPrice += newRecItem.ProductPrice * float64(cartItem.AmountInCart)
+
+			}
+
+			newRec.SumPrice = recSumPrice
+			errSave := trCtx.Save(&newRec).Error
 			if errSave != nil {
 				return errSave
 			}
 
-			// Added missing commas at the end of each line
-			newRecItem := modules.ReceiptProductsList{
-				ReceiptID:     newRec.ReceiptID,
-				ProductID:     prod.ProductID,
-				ProductAmount: cartItem.ProductAmount,
-				ProductPrice:  prod.ProductPrice,
-			}
-
-			result := tx.Create(&newRecItem).Error
-			if result != nil {
-				return result
-			}
-
-			recSumPrice += newRecItem.ProductPrice * float64(cartItem.ProductAmount)
-
-		}
-
-		newRec.SumPrice = recSumPrice
-		errSave := tx.Save(&newRec).Error
-		if errSave != nil {
-			return errSave
-		}
-
-		return nil
-
-	})
-
-	// Checked errTrans instead of the undeclared 'err', and passed the exact error message to React
-	if errTrans != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": errTrans.Error()})
+			return nil	//everything is fine - commit
+		},
+	)
+	if errTransaction != nil{
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": errTransaction.Error()})
 		return
 	}
 
-	// Fixed typo: StatusOK
 	ctx.JSON(http.StatusOK, gin.H{"message": "receipt created succesfully in the DB"})
-
 }

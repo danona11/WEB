@@ -1,45 +1,50 @@
 import { useNavigate } from "react-router-dom"
 import { AppBar, Toolbar, Typography, Button, Box, IconButton, Menu, MenuItem } from "@mui/material"
-import LogoutIcon from "@mui/icons-material/Logout"
+// import LogoutIcon from "@mui/icons-material/Logout"
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart"
 import StorefrontIcon from "@mui/icons-material/Storefront"
-import { getLocalUserName, removeLocalUserName } from "../utils/Auth"
+import { RemoveLocalUser } from "../utils/handleLocalUser"
 import { useState } from "react"
-import DialogPopUp from "../components/DialogPopUp"
+import DialogPopUp from "./popups/DialogPopUp"
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import ManageProductsIcon from '@mui/icons-material/Inventory';
 import AccountCircle from '@mui/icons-material/AccountCircle';
-import { useAppSelector, useAppDispatch } from "../ReduxStore/Hooks";
-import { clearUser } from "../ReduxStore/UserSlice";
+import { useAppSelector, useAppDispatch } from "../Redux/ReduxHooks";
+import { clearUser } from "../Redux/ReduxUserSlice";
+import handleValidateFetch from "../utils/Api/handleValidateFetch"
 
 export default function NavBar() {
 
-    const [auth, setAuth] = useState<boolean>(false)
+
     const [logoutPopUp , setLogoutPopUp] = useState<boolean>(false)
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+    
+    const nav = useNavigate()
 
-    const nav = useNavigate();
-    const currentUser = getLocalUserName();
+//get userName and permissions from reduxStore: 
+//because when the store values update react knowns to rerun the page unlike local storage
+    const {UserName , Permissions} = useAppSelector( state => state.user )  
+    const dispatch = useAppDispatch()
 
     const handleLogout =  async () => {
-        removeLocalUserName();
+
+        RemoveLocalUser()   //remove username and auth from the local storage
         try{
-            const response = await fetch( `${import.meta.env.VITE_API_URL}/logout`, 
-                {
-                    method: "POST" ,
-                    credentials: "include"
-                }   
-            )
+            const responce = await handleValidateFetch( `${import.meta.env.VITE_API_URL}/logout`,   //deletes the cookie
+            {
+                method: "POST" ,
+                credentials: "include"
+            })
+
         }catch(error){
             console.error("network error", error);
         }
 
-        removeLocalUserName()
-        setLogoutPopUp(false)
+        dispatch(clearUser())   //delete the userSlice
+
         nav(`/login`)
     }
 
-    //control popup:
     const handleUserPopupOpen = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
     };
@@ -57,8 +62,10 @@ export default function NavBar() {
                 </Typography>
 
                 <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+
+                    {/*conditional rendoring - only show to admins(perm===true) */}
+                    { Permissions&&(<> 
                         
-  
                         <Button color="inherit" startIcon={<ManageAccountsIcon />} onClick={() => nav("/manageUsers")}>
                             Manage Users
                         </Button>    
@@ -66,6 +73,8 @@ export default function NavBar() {
                         <Button color="inherit" startIcon={<ManageProductsIcon />} onClick={() => nav("/manageProducts")}>
                             Manage Products
                         </Button>
+
+                    </>)}
 
                     <Button color="inherit" startIcon={<StorefrontIcon />} onClick={() => nav("/products")}>
                         Products
@@ -99,7 +108,7 @@ export default function NavBar() {
                         >
                             <MenuItem onClick={ () => { 
                                         handleUserPopupClose()
-                                        handleLogout()
+                                        setLogoutPopUp(true)    //open dialog confirm-logout
                                     }} 
                             >log out</MenuItem>
 
@@ -109,17 +118,8 @@ export default function NavBar() {
                                     }} 
                             >past orders</MenuItem>
 
-                            {/* {currentUser ===    
-                                <MenuItem onClick={ () => { 
-                                            handleUserPopupClose()
-                                            nav(`/manageUsers`)
-                                        }} 
-                                >manage users</MenuItem> */}
-
                         </Menu>
-
                     </Box>
-
                 </Box>
             </Toolbar>
 

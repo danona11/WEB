@@ -1,13 +1,13 @@
 import { Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button } from "@mui/material";
 
-interface ConfirmDialogProps {
-    open: boolean;
-    title: string;
-    description: React.ReactNode;
-    confirmText?: string;
-    cancelText?: string;
-    onConfirm: () => void;
-    onClose: () => void;
+interface ConfirmDialogInterface {
+    open: boolean
+    title: string
+    description: React.ReactNode
+    confirmText?: string    //not must - has default
+    cancelText?: string     //not must - has default
+    onConfirm: ( () => void )
+    onClose: ( () => void )
 }
 
 export default function ConfirmDialog({
@@ -18,7 +18,8 @@ export default function ConfirmDialog({
     cancelText = "cancel",
     onConfirm,
     onClose
-}: ConfirmDialogProps) {
+}: 
+ConfirmDialogInterface){
     return (
         <Dialog 
             open={open} 
@@ -26,20 +27,28 @@ export default function ConfirmDialog({
             aria-labelledby="confirm-dialog-title"
             aria-describedby="confirm-dialog-description"
         >
+
             <DialogTitle id="confirm-dialog-title">{title}</DialogTitle>
             <DialogContent>
+                
                 <DialogContentText id="confirm-dialog-description">
                     {description}
                 </DialogContentText>
+
             </DialogContent>
+
             <DialogActions>
+
                 <Button onClick={onClose} color="primary">
                     {cancelText}
                 </Button>
+
                 <Button onClick={onConfirm} color="error" variant="contained">
                     {confirmText}
                 </Button>
+
             </DialogActions>
+        
         </Dialog>
     );
 }

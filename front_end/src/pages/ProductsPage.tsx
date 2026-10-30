@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import {Box,Button,Grid,Pagination,Stack,Typography, Card , CardMedia, CardContent, CardActions, IconButton} from "@mui/material";
 import AddShoppingCartOutlinedIcon from '@mui/icons-material/AddShoppingCartOutlined';
 import Product from "../interfaces/ProductInterface";
-import { getLocalUserName } from '../utils/Auth'
+import { GetLocalUserName } from '../utils/handleLocalUser'
 import { formatProductName } from '../utils/Format'
 import RemoveIcon from '@mui/icons-material/Remove'
 import AddIcon from '@mui/icons-material/Add'
@@ -22,7 +22,7 @@ export default function ProductsPage() {
     const nav = useNavigate();
 
     useEffect(() => {   //get users cart only on first run
-        const LocalUserName = getLocalUserName()
+        const LocalUserName = GetLocalUserName()
         const cartID = `${LocalUserName}'s_cart`
         const myCart = localStorage.getItem(cartID)
 
@@ -61,7 +61,7 @@ export default function ProductsPage() {
     
     const addToCart = (prod:Product) => {
 
-        const LocalUserName = getLocalUserName()
+        const LocalUserName = GetLocalUserName()
         const cartID = `${LocalUserName}'s_cart`
         
         const amountInCart = AmountInCartByID(prod.ProductID)
