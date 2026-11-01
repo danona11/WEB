@@ -20,7 +20,7 @@ export default function ProductsPage() {
     const [myCartList, setMyCartList ] = useState<Product[]>([])
     const [maxPage, setMaxPage] = useState<number>(1);
 
-    //get the username on every render
+    //get the username on every rerender
     //if the user logs out and logs in with another user - the cart will be updated to the new user
     const RamUserName = useAppSelector( (state) => state.user.SliceUserName )
 
@@ -110,7 +110,7 @@ export default function ProductsPage() {
         setMyCartList(updatedCart)
 
         localStorage.setItem( cartID , JSON.stringify(updatedCart) )
-        
+
         console.log(`${prod.ProductName} added to cart`)
 
         setAmountToAdd( (old) => ({ ...old , [prod.ProductID]:1 }) )

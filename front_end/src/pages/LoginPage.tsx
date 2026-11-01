@@ -1,5 +1,5 @@
 import {  useNavigate } from "react-router-dom";
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import Alert from '@mui/material/Alert';
 import { Button } from "@mui/material";
 import DebouncedTextField from "../components/DebouncedTextField"
@@ -16,9 +16,15 @@ export default function LoginPage() {
 //Link will send the client straight to the next page, without waiting for the responce of the BE
 //NAV: when pressing a button for fetching
     const nav = useNavigate() 
+
     const dispatch = useAppDispatch()
-
-
+    useEffect(() => {
+        
+        const userName = useAppSelector((state) => state.user.SliceUserName)
+    
+    }, []) //runs when page loads, so old user data gets wiped from store when switching users
+    
+    
     const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
         
         e.preventDefault();     //the page wont refresh when pressing login
@@ -49,14 +55,12 @@ export default function LoginPage() {
             }
 
             else{
-                <Alert severity="error">login failed</Alert>
                 console.log('invalid username or password');
             }               
         }
         
         catch(error){
             console.error("network error", error);
-            <Alert severity="error">request not avilable rn</Alert>
         }
     }
 
