@@ -8,7 +8,7 @@ const userName: (string|null) = GetLocalUserName()
 const perm    : boolean       = GetLocalUserPermissions()
 
 const initialState: UserState = {
-    UserName: userName || "unAuthenticated",
+    SliceUserName: userName || "unAuthenticated",
     Permissions: perm,
     LoginPopupOpen: false,
 }
@@ -20,17 +20,18 @@ export const userSlice = createSlice({
     reducers:{  //change the old state by passing the action and the old state into a new object
 
         setUser:( state, action: PayloadAction<{ userName: string , permissions: boolean }>) => {
+            const { userName , permissions } = action.payload
+            
+            state.SliceUserName = userName
+            state.Permissions = permissions
 
-            state.UserName = action.payload.userName
-            state.Permissions = action.payload.permissions
-
-            SetLocalUser(action.payload.userName , action.payload.permissions )
+            SetLocalUser(userName , permissions )
 
         },
 
         clearUser: (state) => { //clear state and local storage when logging out
             
-            state.UserName = "unAuthenticated"
+            state.SliceUserName = "unAuthenticated"
             state.Permissions = false
             
             RemoveLocalUser()

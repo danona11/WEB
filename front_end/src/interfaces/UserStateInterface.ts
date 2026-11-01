@@ -1,5 +1,5 @@
 export default interface UsersState{
-    UserName: string   
+    SliceUserName: string   
 	Permissions: boolean
     LoginPopupOpen: boolean
 }

@@ -9,7 +9,8 @@ import RemoveIcon from '@mui/icons-material/Remove'
 import AddIcon from '@mui/icons-material/Add'
 import { ProductCardStyle } from "../styles/CardStyle";
 import { GridContainerStyle } from "../styles/GridStyle";
-
+import { useAppSelector, useAppDispatch } from "../Redux/ReduxHooks";
+import handleValidateFetch from "../utils/Api/handleValidateFetch";
 
 export default function ProductsPage() {
 
@@ -18,28 +19,39 @@ export default function ProductsPage() {
     const [amountToAdd, setAmountToAdd] = useState<Record<number,number>>({})   //list of all cards in page- each card has { key(prodID): value(amountToAdd) }
     const [myCartList, setMyCartList ] = useState<Product[]>([])
     const [maxPage, setMaxPage] = useState<number>(1);
-    
+
+    //get the username on every render
+    //if the user logs out and logs in with another user - the cart will be updated to the new user
+    const RamUserName = useAppSelector( (state) => state.user.SliceUserName )
+
     const nav = useNavigate();
 
-    useEffect(() => {   //get users cart only on first run
-        const LocalUserName = GetLocalUserName()
-        const cartID = `${LocalUserName}'s_cart`
+    useEffect(() => {
+        const cartID = `${RamUserName}'s_cart`
         const myCart = localStorage.getItem(cartID)
 
         if(myCart){
+
             try{
                 setMyCartList( JSON.parse(myCart) )//users cart products list
+
             }catch(err){
                 console.error("failed to find users cart" , err)
+
+                setMyCartList([])   //if the user has no cart in local storage - create an empty cart for him
             }
+        }else{
+            
+            setMyCartList([]) //if the user has no cart in local storage - create an empty cart for him
         }
-    },[])
+
+    },[RamUserName])  //runs every new user, in case of switching users
 
 
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const responce = await fetch(`${import.meta.env.VITE_API_URL}/products/page/${page}`,
+                const responce = await handleValidateFetch(`${import.meta.env.VITE_API_URL}/products/page/${page}`,
                 {
                     method: "GET",
                     credentials: "include"
@@ -60,10 +72,10 @@ export default function ProductsPage() {
     }, [page])  
     
     const addToCart = (prod:Product) => {
-
-        const LocalUserName = GetLocalUserName()
-        const cartID = `${LocalUserName}'s_cart`
         
+        const cartID = `${RamUserName}'s_cart`
+        const myCart = localStorage.getItem(cartID)
+
         const amountInCart = AmountInCartByID(prod.ProductID)
 
         let amountToAdd = AmountToAddByID(prod.ProductID)
@@ -96,7 +108,9 @@ export default function ProductsPage() {
             ]
         }
         setMyCartList(updatedCart)
+
         localStorage.setItem( cartID , JSON.stringify(updatedCart) )
+        
         console.log(`${prod.ProductName} added to cart`)
 
         setAmountToAdd( (old) => ({ ...old , [prod.ProductID]:1 }) )
