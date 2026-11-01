@@ -1,10 +1,9 @@
 import {  useNavigate } from "react-router-dom";
 import { FormEvent, useEffect, useState } from "react";
-import Alert from '@mui/material/Alert';
 import { Button } from "@mui/material";
 import DebouncedTextField from "../components/DebouncedTextField"
 import { Typography } from "@mui/material";
-import { setUser } from "../Redux/ReduxUserSlice";
+import { clearUser, setUser } from "../Redux/ReduxUserSlice";
 import { useAppSelector, useAppDispatch } from "../Redux/ReduxHooks";
 import { useDispatch } from "react-redux";
 
@@ -16,12 +15,11 @@ export default function LoginPage() {
 //Link will send the client straight to the next page, without waiting for the responce of the BE
 //NAV: when pressing a button for fetching
     const nav = useNavigate() 
-
     const dispatch = useAppDispatch()
+
     useEffect(() => {
-        
-        const userName = useAppSelector((state) => state.user.SliceUserName)
-    
+        dispatch(clearUser()) //clear the old user data from store when switching users
+
     }, []) //runs when page loads, so old user data gets wiped from store when switching users
     
     

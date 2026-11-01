@@ -1,7 +1,6 @@
 import { FormEvent, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../Redux/ReduxHooks";
-import handleValidateFetch from "../../utils/Api/handleValidateFetch";
-import { setUser , openLoginPopup } from "../../Redux/ReduxUserSlice";
+import { setUser , closeLoginPopup } from "../../Redux/ReduxUserSlice";
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Typography } from "@mui/material";
 import DebouncedTextField from "../DebouncedTextField";
 
@@ -39,7 +38,10 @@ export default function LoginPopup(){
 
             if (responce.ok) {  //authorized user
                 dispatch( setUser({ userName: data.userName , permissions: data.perrmissions }) ) 
-                dispatch(openLoginPopup())
+                dispatch(closeLoginPopup())
+
+                setUserName("")  //clear the input fields for next time the popup opens
+                setPassword("")
             }
 
             else{

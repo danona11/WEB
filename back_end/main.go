@@ -54,7 +54,7 @@ func main() {
 	protectedRoutes.GET("/products/:id", controllers.ShowProduct)
 	
 	//receipts controllers:
-	protectedRoutes.POST("/createReceipt", controllers.CreateReceipt)
+	protectedRoutes.POST("/checkOutCart", controllers.CreateReceipt)
 
 	//start the app:
 	router.Run("localhost:8080") 

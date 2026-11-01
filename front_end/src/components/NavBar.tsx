@@ -23,7 +23,7 @@ export default function NavBar() {
 
 //get userName and permissions from reduxStore: 
 //because when the store values update react knowns to rerun the page unlike local storage
-    const {UserName , Permissions} = useAppSelector( state => state.user )  
+    const {SliceUserName , Permissions} = useAppSelector( state => state.user )  
     const dispatch = useAppDispatch()
 
     const handleLogout =  async () => {

@@ -11,15 +11,20 @@ import { ProductCardStyle } from "../styles/CardStyle";
 import { GridContainerStyle } from "../styles/GridStyle";
 import RemoveShoppingCartIcon from '@mui/icons-material/RemoveShoppingCart';
 import DialogPopUp from "../components/popups/DialogPopUp"
+import handleValidateFetch from "../utils/Api/handleValidateFetch";
+import { useAppSelector } from "../Redux/ReduxHooks";
+import { setUser } from "../Redux/ReduxUserSlice";
+import CheckoutIcon from '@mui/icons-material/ShoppingCartCheckout';
 
 export default function CartPage(){
     
     const [itemsList , setItemsList] = useState<Product[]>([]);    
     const [itemToDelete , setItemToDelete] = useState < Product | null > (null)    //null when the dialog isn't popped up
-    const [popup,setPopup] = useState<boolean>(false)   
+    const [clearPopup,setClearPopup] = useState<boolean>(false)   
+    const [checkOutPopup,setCheckOutPopup] = useState<boolean>(false)   
 
-    const LocalUserName = GetLocalUserName()
-    const cartID = `${LocalUserName}'s_cart`
+    const {SliceUserName} = useAppSelector( state => state.user )
+    const cartID = `${SliceUserName}'s_cart`
 
     let checkOutTotal = 0
     for (const item of itemsList){
@@ -28,19 +33,21 @@ export default function CartPage(){
 
 
     useEffect( () =>{
-        const LocalUserName = GetLocalUserName()
-        const cartID = `${LocalUserName}'s_cart`
+        
         const myCart = localStorage.getItem(cartID)
         
         if(myCart){
             try{
                 const cart = JSON.parse(myCart)
                 setItemsList(cart)
+
             } catch{
                 console.error("parsing the locals storage cart data failed")
-                localStorage.removeItem(cartID) //if failed remove it from the local so it doesent make issues later
+                setItemsList([])
             } 
-        } else;
+        } else{
+            setItemsList([])
+        }
 
     } , [cartID])//runs every new user, in case of switching users
 
@@ -77,24 +84,88 @@ export default function CartPage(){
         setItemsList( newList)
         localStorage.setItem(cartID , JSON.stringify(newList)) 
 
-        setItemToDelete(null)   //remove the popup
+        setItemToDelete(null)   //remove the confirmPopup
     }
 
     const handleClearCart = () =>{
         setItemsList( [] )
-        localStorage.setItem(cartID , JSON.stringify([])) 
-        setPopup(false) //REMOVE POPuP AFTER CART GETS CLEARED
+        localStorage.removeItem(cartID) 
+        setClearPopup(false) //REMOVE clearPOPuP AFTER CART GETS CLEARED
 
+    }
+
+    const handleCheckOutCart = async() => {
+
+        if(itemsList.length === 0){
+            console.log("cart is empty")
+            setCheckOutPopup(false) //close the popup if cart is empty
+            return
+        }
+
+        //give the cart list the expected format for the back end: [ {ProductID , AmountInCart} ]
+        const cartBody = itemsList.map( (item) => ( { ProductID: item.ProductID , AmountInCart: item.AmountInCart } ) )
+
+        try{
+            const responce = await handleValidateFetch( `${import.meta.env.VITE_API_URL}/checkOutCart`, 
+                {
+                    method: "POST" ,
+                    headers: { "Content-Type" : "application/json"},
+                    
+                    body: JSON.stringify(cartBody),
+
+                    credentials: "include"
+                }   
+            )
+            
+            const data = await responce.json()
+            
+            if (responce.ok) {
+
+
+                handleClearCart() //clear the cart after checkout
+
+                setCheckOutPopup(false) //close the popup after checkout
+
+                console.log("checkout successful")
+            }
+
+            else{
+                console.log("checkout failed")
+                setCheckOutPopup(false) //close the popup if checkout fails
+            }               
+        }
+        
+        catch(error){
+            console.error("network error", error)
+            setCheckOutPopup(false) //close the popup if network error
+        }
     }
 
 
     return(
-        <Box className="cartPageBox" sx={{ textAlign:'center' , padding:'30px' }}>
-            <Typography variant="h3"> MY CART </Typography> 
+        <Box className="cartPageBox" sx={{ padding:'30px', position: 'relative' }}>
+            
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+                <Box sx={{ width: '100px' }} /> 
+                
+                <Typography variant="h3" sx={{ textAlign: 'center', flexGrow: 1 }}> 
+                    MY CART 
+                </Typography> 
+
+                <IconButton 
+                    color="error"
+                    onClick={()=> setClearPopup(true) } 
+                    disabled={itemsList.length === 0}
+                    sx={{ fontSize: "0.8rem", display: 'flex', gap: 1 }}
+                >   
+                    CLEAR CART
+                    <RemoveShoppingCartIcon fontSize="small"/>
+                </IconButton>
+            </Box>
 
             <Grid container spacing={3} sx={ GridContainerStyle }>
-                { itemsList.length >0 ? (
-                    
+            { 
+                itemsList.length > 0 ? (
                     itemsList.map( (item) => {
                         const outOfStock = item.ProductStock === 0;
                         return(
@@ -102,12 +173,11 @@ export default function CartPage(){
                                 <Card className="prodCard" sx={{ ...ProductCardStyle, backgroundColor: outOfStock ? '#ffcccc' : 'white', opacity: outOfStock ? 0.7 : 1  }}>                                    
                                     <CardMedia  
                                         component="img" 
-                                        image={item.ProductPhotoUrl ||"https://i.pinimg.com/736x/74/49/9f/74499f7623bbe946867f791f863a4f87.jpg"}
+                                        image={item.ProductPhotoUrl || "https://i.pinimg.com/736x/74/49/9f/74499f7623bbe946867f791f863a4f87.jpg"}
                                         alt=""
                                         sx={{ height: 300, objectFit:'contain'}}
                                     />
                                     <CardContent>
-
                                         <Typography variant="h5" sx={{textAlign:'center' , textDecoration: outOfStock ? 'line-through' : 'none' }}>
                                             { formatProductName(item.ProductName) }
                                         </Typography>
@@ -116,17 +186,14 @@ export default function CartPage(){
                                             stock left:{item.ProductStock}
                                         </Typography>
 
-
                                         <Typography variant="h6" sx={{textAlign:'center' , textDecoration: outOfStock ? 'line-through' : 'none' }}>
-                                            total: { (item.ProductPrice*item.AmountInCart).toFixed(2) } ILS
+                                            total: { (item.ProductPrice * item.AmountInCart).toFixed(2) } ILS
                                         </Typography>
-
                                     </CardContent>  
 
                                     <CardActions>
-                                        <Box sx={{display:"flex" , flexDirection:'row', justifyContent:'flex-end'}}>   
-                                            
-                                            <Typography variant="h6">
+                                        <Box sx={{display:"flex" , flexDirection:'row', justifyContent:'flex-end', alignItems: 'center'}}>   
+                                            <Typography variant="h6" sx={{ mr: 1 }}>
                                                 amount:
                                             </Typography>
 
@@ -134,11 +201,11 @@ export default function CartPage(){
                                                 <RemoveIcon />
                                             </IconButton>
 
-                                            <Typography variant="h6">
+                                            <Typography variant="h6" sx={{ mx: 1 }}>
                                                 {item.AmountInCart}
                                             </Typography>
 
-                                            <IconButton onClick={ () => ( handleChangeAmountInCart( item , 1 ) ) } disabled={ item.AmountInCart>=item.ProductStock || outOfStock}  >
+                                            <IconButton onClick={ () => ( handleChangeAmountInCart( item , 1 ) ) } disabled={ item.AmountInCart >= item.ProductStock || outOfStock}  >
                                                 <AddIcon />
                                             </IconButton>
                                         </Box>
@@ -146,7 +213,6 @@ export default function CartPage(){
                                         <Button title='remove item from cart' variant='outlined' size='small' endIcon={<DeleteIcon />} onClick={() => setItemToDelete(item)} >
                                             DELETE
                                         </Button>
-
                                     </CardActions>
                                 </Card>
                             </Grid>
@@ -156,39 +222,53 @@ export default function CartPage(){
                     <Typography variant="h6" component="h6" sx={{ width: '100%', textAlign: 'center', mt: 4 }}>
                         your cart is currently empty - go to products page to add items to cart
                     </Typography>
-                )}
+                )
+            }
             </Grid>
 
             <Typography variant="h5" sx={{ width: '100%', textAlign: 'center', mt: 4 }}>
-                CHEKOUT TOTAL: {checkOutTotal.toFixed(2)} ILS
+                CHECKOUT TOTAL: {checkOutTotal.toFixed(2)} ILS
             </Typography>
 
-            <IconButton sx={{fontSize:"small"}} onClick={()=> setPopup(true) }
-            >   
-                CLEAR CART
-                <RemoveShoppingCartIcon fontSize="medium"/>
-            </IconButton>
+            <Box sx={{ mt: 3, textAlign: 'center' }}>
+                <Button 
+                    variant="contained" 
+                    color="primary" 
+                    size="large"
+                    onClick={ () => setCheckOutPopup(true) } 
+                    disabled={itemsList.length === 0}
+                    endIcon={<CheckoutIcon />}
+                >
+                    CHECKOUT
+                </Button>
+            </Box>
 
             <DialogPopUp 
-                open={( itemToDelete!==null )}
+                open={( itemToDelete !== null )}
                 title="remove item from cart"
-                description={`Sure U Want to delete ${itemToDelete?.ProductName} From Your Cart?`}
+                description={`sure u want to delete ${itemToDelete?.ProductName} from your cart?`}
                 confirmText = "delete"
                 onConfirm={ handleRemoveItem }
                 onClose={ () => ( setItemToDelete(null) ) }
-
             />
 
             <DialogPopUp 
-                open={ popup }
+                open={ clearPopup }
                 title="clear cart"
-                description={`Sure U Want to clear all the items From Your Cart?`}
+                description={`sure u want to clear all the items from your cart?`}
                 confirmText = "clear"
                 onConfirm={ handleClearCart }
-                onClose={ () => ( setPopup(false) ) }
-
+                onClose={ () => ( setClearPopup(false) ) }
             />
 
+            <DialogPopUp 
+                open={ checkOutPopup }
+                title="checkout"
+                description={`sure u want to proceed to checkout cart?`}
+                confirmText = "checkout"
+                onConfirm={ handleCheckOutCart }
+                onClose={ () => ( setCheckOutPopup(false) ) }
+            />
         </Box>
     )
-}                                 
+}
