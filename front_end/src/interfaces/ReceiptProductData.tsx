@@ -1,11 +1,14 @@
-export default interface ReceiptProductData{
-    ReceiptID: number
-    UserID: number
-    ProductID: number
+export interface ReceiptProductDetails{
+    RowID:              number
+    SumPrice:           number
+    ProductName:        string  
+    AmountInCart:       number
+    ProductPricePerUnit:number
+    ProductPhotoURL:    string
+}
 
-    ProductName: string  
-    ProductSumPrice: number
-    ProductAmountInCart: number
-    ProductPricePerUnit: number
-    ProductPhotoUrl: string
+export interface ReceiptsList{
+    ReceiptID:          number
+    SumPrice:           number
+    ProductDetails:     ReceiptProductDetails[]
 }

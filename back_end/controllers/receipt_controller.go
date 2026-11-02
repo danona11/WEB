@@ -21,7 +21,7 @@ func CreateReceipt(ctx *gin.Context) {
 	}
 	var user modules.User = userInfo.(modules.User)
 
-	var cartList []modules.CreateReceiptItemStruct
+	var cartList []dto.CheckoutItemRequest
 	errBind := ctx.Bind(&cartList)
 	if errBind != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid cart"})
@@ -120,30 +120,38 @@ func GetUsersReceipts(ctx *gin.Context) {
 		return
 	}
 
-	var usersReceiptResponses = [] dto.GetUsersReceiptResponse{}
-	var rowIDCounter uint = 0 
+	userReceiptList := make([]dto.GetUsersReceiptResponse, 0, len(receipts)) //preallocate slice with size equal to the number of receipts
 
-	for _, receipt := range receipts {	//iterate through each receipt and create a response object for each one
-		for _, receiptProduct := range receipt.Products {	//iterate through each line product in the receipt
-			var row dto.GetUsersReceiptResponse
+	for _, receipt := range receipts {
+
+		var rowIDCounter uint = 0 
+		var productDetails []dto.ReceiptsDetails	//new empty list for each product in the receipt
+
+		for _, receiptProduct := range receipt.Products {
+			
 			rowIDCounter++
-			
-			row.RowID = rowIDCounter
-			row.ReceiptID = receipt.ReceiptID
-			row.SumPrice = receipt.SumPrice
-			row.ProductName = receiptProduct.Product.ProductName
-			row.AmountInCart = receiptProduct.AmountInCart
-			row.ProductPrice = receiptProduct.ProductPrice
-			
-			if receiptProduct.Product.ProductPhotoUrl == "" {
-				receiptProduct.Product.ProductPhotoUrl = viper.GetString("default_kit_image")
+			productPhotoURL := receiptProduct.Product.ProductPhotoUrl
+			if productPhotoURL == "" {
+				productPhotoURL = viper.GetString("default_kit_image")
 			}
-			row.ProductPhotoURL = receiptProduct.Product.ProductPhotoUrl
-			
-			usersReceiptResponses = append(usersReceiptResponses, row)
 
+			productDetails = append(productDetails, dto.ReceiptsDetails{
+				RowID:              rowIDCounter,
+				ProductName:        receiptProduct.Product.ProductName,
+				AmountInCart:       receiptProduct.AmountInCart,
+				ProductPricePerUnit:receiptProduct.ProductPrice,
+				SumPrice:           ( float64(receiptProduct.AmountInCart)*receiptProduct.ProductPrice ),
+				ProductPhotoURL:    productPhotoURL,
+			})
+		
 		}
+		userReceiptList = append(userReceiptList,  dto.GetUsersReceiptResponse{
+			ReceiptID:    	receipt.ReceiptID,
+			SumPrice:     	receipt.SumPrice,
+			ProductDetails: productDetails,
+		})
+		
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"receipts": usersReceiptResponses})	//returns for each receipt the list of products and their amount in that receipt
+	ctx.JSON(http.StatusOK, gin.H{"receipts": userReceiptList})	//returns for each receipt the list of products and their amount in that receipt
 }

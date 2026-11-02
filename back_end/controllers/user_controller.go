@@ -9,7 +9,7 @@ import (
 	"net/http"
 	"os"
 	"time"
-
+	"my-project/dto"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
@@ -31,6 +31,132 @@ func GetUsers(ctx *gin.Context){ //gin.context = all the info about the request
 	ctx.JSON(http.StatusOK, gin.H{"users":users_list })
 
 }
+
+
+func SendLogin(ctx *gin.Context) {
+
+	var login_input struct {
+    	UserName    string `json:"UserName"`
+    	Password 	string `json:"Password"`
+	}
+
+	err := ctx.Bind(&login_input) //will take the json from the front, and convert it to login_input type
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "input not valid, please try again"})
+		return
+	}
+
+	var login_user modules.User
+
+	//select * from users where user_name = login_input.user_name , First - will stop searching when found 1
+	found := initializers.DB_ptr.First(&login_user, "user_name = ?", login_input.UserName)
+	if found.Error != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "user name is not registered"})
+		return
+	}
+
+	//will hash the inputed password with his salt, and compare to the same user's password from the DB:
+	err = bcrypt.CompareHashAndPassword([]byte(login_user.Password), []byte(login_input.Password))
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "password incorrect"})
+		return
+	}
+
+	//login info valid - will genarate a token with the userID and exp:
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"subject": login_user.UserID,
+		"exp":     time.Now().Add(time.Minute * 30).Unix(),
+	})
+	secret := os.Getenv("secret")
+
+	// Sign in and get the complete encoded token as a string using the secret signature
+	tokenString, err := token.SignedString([]byte(secret))
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "failed to create token"})
+		return
+	}
+
+	//packs the token into a cookie - which the browser will attach to every request
+	ctx.SetSameSite(http.SameSiteLaxMode)
+	ctx.SetCookie("Authorization", tokenString, 1800, "/", "", false, true) //30 minutes, httponly - onlye the browser and the server can read
+
+	//sends the cookie to the front, so the front can read it and store the user name and permissions
+	ctx.JSON(http.StatusOK, 
+		gin.H{
+			"message": "cookie",
+			"userName":login_user.UserName,
+			"permissions":login_user.Permissions,
+		})
+}
+
+func SendSignUp(ctx *gin.Context) {
+
+	var userDetails dto.SignupRequest
+
+	err := ctx.Bind(&userDetails)
+	if err != nil { //couldnt bind into userDetails
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "user details unaccesptable"})
+		return
+	}
+
+	//bcrypt will hash the users passwords in the db: will generate a 22dig salt, and encrypt the password to a combined string of the both: (salt+hash)
+	hash, err := bcrypt.GenerateFromPassword([]byte(userDetails.Password), 10) //10(cost)- how slow the hashing alg will be
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "failed to hash the password"})
+		return
+	}
+
+	newUser := modules.User{
+		UserName: userDetails.UserName,
+		Email:    userDetails.Email,
+		Password: string(hash),
+	}
+
+	result := initializers.DB_ptr.Create(&newUser)
+	//Note:need to check if user already exists
+
+	if result.Error != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "failed to register new user"})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"messge": "new user registerd and saved in tha database"})
+}
+
+// validate the user is who he is, so that when a user does an important task, it is defiently him.
+func Validate(ctx *gin.Context) {
+	// get the userData from the local memmory of the router
+	userData, exists := ctx.Get("user")
+	if exists != true {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "user dosn't have authintication"})
+		return
+	}
+
+	//from gin user type to DB user type:
+	user := userData.(modules.User)
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"message":     "user validated",
+		"userName":    user.UserName,
+		"email":       user.Email,
+		"permissions": user.Permissions,
+	})
+}
+
+func Logout(ctx *gin.Context) {
+
+	// 		cookie: ( name , value , maxAge , path , domain , secure , http-only )
+	ctx.SetCookie( "Authorization" , "" , -1 , "/" , "localhost" , false , true)//the cookie has max age of -1 so the browser will automaticly delete it.
+	ctx.JSON(http.StatusOK, gin.H{"msg":"user logged out and cookie deleted"} )
+
+}
+
+
+func DeleteUser(ctx *gin.Context) {
+
+}
+
+
 
 /*
 func CreateUser(ctx *gin.Context) {
@@ -91,128 +217,3 @@ func UserById(ctx *gin.Context) {
 	ctx.IndentedJSON(http.StatusOK, User)
 }
 */
-
-func SendLogin(ctx *gin.Context) {
-
-	var login_input struct {
-    	UserName    string `json:"UserName"`
-    	Password 	string `json:"Password"`
-	}
-
-	err := ctx.Bind(&login_input) //will take the json from the front, and convert it to login_input type
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "input not valid, please try again"})
-		return
-	}
-
-	var login_user modules.User
-
-	//select * from users where user_name = login_input.user_name , First - will stop searching when found 1
-	found := initializers.DB_ptr.First(&login_user, "user_name = ?", login_input.UserName)
-	if found.Error != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "user name is not registered"})
-		return
-	}
-
-	//will hash the inputed password with his salt, and compare to the same user's password from the DB:
-	err = bcrypt.CompareHashAndPassword([]byte(login_user.Password), []byte(login_input.Password))
-	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "password incorrect"})
-		return
-	}
-
-	//login info valid - will genarate a token with the userID and exp:
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"subject": login_user.UserID,
-		"exp":     time.Now().Add(time.Minute * 30).Unix(),
-	})
-	secret := os.Getenv("secret")
-
-	// Sign in and get the complete encoded token as a string using the secret signature
-	tokenString, err := token.SignedString([]byte(secret))
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "failed to create token"})
-		return
-	}
-
-	//packs the token into a cookie - which the browser will attach to every request
-	ctx.SetSameSite(http.SameSiteLaxMode)
-	ctx.SetCookie("Authorization", tokenString, 1800, "/", "", false, true) //30 minutes, httponly - onlye the browser and the server can read
-
-	//sends the cookie to the front, so the front can read it and store the user name and permissions
-	ctx.JSON(http.StatusOK, 
-		gin.H{
-			"message": "cookie",
-			"userName":login_user.UserName,
-			"permissions":login_user.Permissions,
-		})
-}
-
-func SendSignUp(ctx *gin.Context) {
-	var userDetails struct {
-		UserName string
-		Email    string
-		Password string
-	}
-
-	err := ctx.Bind(&userDetails)
-	if err != nil { //couldnt bind into userDetails
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "user details unaccesptable"})
-		return
-	}
-
-	//bcrypt will hash the users passwords in the db: will generate a 22dig salt, and encrypt the password to a combined string of the both: (salt+hash)
-	hash, err := bcrypt.GenerateFromPassword([]byte(userDetails.Password), 10) //10(cost)- how slow the hashing alg will be
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "failed to hash the password"})
-		return
-	}
-
-	newUser := modules.User{
-		UserName: userDetails.UserName,
-		Email:    userDetails.Email,
-		Password: string(hash)}
-
-	result := initializers.DB_ptr.Create(&newUser)
-	//Note:need to check if user already exists
-
-	if result.Error != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "failed to register new user"})
-		return
-	}
-
-	ctx.JSON(http.StatusOK, gin.H{"messge": "new user registerd and saved in tha database"})
-}
-
-// validate the user is who he is, so that when a user does an important task, it is defiently him.
-func Validate(ctx *gin.Context) {
-	// get the userData from the local memmory of the router
-	userData, exists := ctx.Get("user")
-	if exists != true {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "user dosn't have authintication"})
-		return
-	}
-
-	//from gin user type to DB user type:
-	user := userData.(modules.User)
-
-	ctx.JSON(http.StatusOK, gin.H{
-		"message":     "user validated",
-		"userName":    user.UserName,
-		"email":       user.Email,
-		"permissions": user.Permissions,
-	})
-}
-
-func Logout(ctx *gin.Context) {
-
-	// 		cookie: ( name , value , maxAge , path , domain , secure , http-only )
-	ctx.SetCookie( "Authorization" , "" , -1 , "/" , "localhost" , false , true)//the cookie has max age of -1 so the browser will automaticly delete it.
-	ctx.JSON(http.StatusOK, gin.H{"msg":"user logged out and cookie deleted"} )
-
-}
-
-
-func DeleteUser(ctx *gin.Context) {
-
-}

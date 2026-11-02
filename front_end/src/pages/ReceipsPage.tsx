@@ -1,13 +1,20 @@
-import { useEffect, useMemo, useState } from "react"
-import ReceiptProductData from "../interfaces/ReceiptProductData"
+import { useEffect , useState } from "react"
+import { ReceiptsList } from "../interfaces/ReceiptProductData"
 import fetchWithValidation from "../utils/Api/fetchWithValidation"
-import { GridColDef } from "@mui/x-data-grid/models"
-import { Avatar, Box } from "@mui/material"
-import { DataGrid } from "@mui/x-data-grid/DataGrid"
+import Box from '@mui/material/Box';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Paper from '@mui/material/Paper';
+import ReceiptsTable from "../components/ReceiptsTable";
+
 
 export default function ReceipsPage() {
 
-    const [receiptsList, setReceiptsList] = useState<ReceiptProductData[]>([])
+    const [receiptsList, setReceiptsList] = useState<ReceiptsList[]>([])
 
     useEffect(() => {
         const handleGetUserReceipts = async () => {
@@ -22,7 +29,7 @@ export default function ReceipsPage() {
                 
                 }else {
                     const data = await responce.json()
-                    setReceiptsList(data.receipts)
+                    setReceiptsList(data.receipts || [])
                 }
    
             } catch (error) {
@@ -33,28 +40,30 @@ export default function ReceipsPage() {
         handleGetUserReceipts()
     }, [])
 
-    const columns = useMemo<GridColDef<ReceiptProductData>[]>( () => [
+   return (
+        <Box sx={{ maxWidth: '900px', margin: '0 auto', mt: 4 }}>
+        <TableContainer component={Paper}>
+            <Table aria-label="collapsible table">
 
-        { field: 'receipt_id',              headerName: 'Receipt ID',       width: 150 },
-        { field: 'product_name',            headerName: 'Product Name',     width: 200 },
-        { field: 'product_sum_price',       headerName: 'Sum Price',        width: 150 },
-        { field: 'product_amount_in_cart',  headerName: 'Amount in Cart',   width: 150 },
-        { field: 'product_price_per_unit',  headerName: 'Price per Unit',   width: 150 },
-        { field: 'product_photo_url',       headerName: 'Photo',            width: 100 , 
-            renderCell: (params) => ( <Avatar src={params.value} variant="circular" sx={{ width: 50, height: 50 }} /> )
-        },
-    ],[] )
+                <TableHead>
+                    <TableRow>
+                        <TableCell />
+                        <TableCell>Order Number</TableCell>
+                        <TableCell align="right">Total Price</TableCell>
+                    </TableRow>
+                </TableHead>
 
+                <TableBody>
 
+                    {receiptsList.map((row) => (
 
-    return (
-        <Box sx={{ height: 400, width: '100%' }}>
-            <DataGrid
-                rows={receiptsList}
-                columns={columns}
-                getRowId={ (row: ReceiptProductData) => row.ReceiptID }
-            />
+                        <ReceiptsTable key={row.ReceiptID} row={row} />
+                    ))}
+
+                </TableBody>
+
+            </Table>
+        </TableContainer>
         </Box>
-    )
-
+    );
 }
