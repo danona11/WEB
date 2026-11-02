@@ -41,7 +41,7 @@ export default function ReceipsPage() {
         { field: 'product_amount_in_cart',  headerName: 'Amount in Cart',   width: 150 },
         { field: 'product_price_per_unit',  headerName: 'Price per Unit',   width: 150 },
         { field: 'product_photo_url',       headerName: 'Photo',            width: 100 , 
-            renderCell: (params) => ( <Avatar src={params.value || "https://i.pinimg.com/736x/74/49/9f/74499f7623bbe946867f791f863a4f87.jpg"}  variant="circular" sx={{ width: 50, height: 50 }} /> )
+            renderCell: (params) => ( <Avatar src={params.value} variant="circular" sx={{ width: 50, height: 50 }} /> )
         },
     ],[] )
 

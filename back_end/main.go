@@ -8,16 +8,16 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
-
-func main() {
-
+func init() {
 	initializers.InitConfig()
 	initializers.LoadEnvVars()
 	initializers.ConnectToDB()
 	initializers.Migrate()
-	
-	router := gin.Default()
+}
 
+func main() {
+
+	router := gin.Default()
 	router.SetTrustedProxies(nil)
 
 	//CORS:

@@ -1,2 +1,4 @@
 #constants that arn't secrets
 app_name : "Football kits"
+default_kit_image : "https://i.pinimg.com/736x/74/49/9f/74499f7623bbe946867f791f863a4f87.jpg"
+kits_per_page : 6

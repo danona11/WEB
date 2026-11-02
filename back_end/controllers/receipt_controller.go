@@ -2,11 +2,13 @@ package controllers
 
 import (
 	"errors"
+	"my-project/dto"
 	"my-project/initializers"
 	"my-project/modules"
 	"net/http"
-	"my-project/dto"
+
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
 	"gorm.io/gorm"
 )
 
@@ -132,6 +134,10 @@ func GetUsersReceipts(ctx *gin.Context) {
 			row.ProductName = receiptProduct.Product.ProductName
 			row.AmountInCart = receiptProduct.AmountInCart
 			row.ProductPrice = receiptProduct.ProductPrice
+			
+			if receiptProduct.Product.ProductPhotoUrl == "" {
+				receiptProduct.Product.ProductPhotoUrl = viper.GetString("default_kit_image")
+			}
 			row.ProductPhotoURL = receiptProduct.Product.ProductPhotoUrl
 			
 			usersReceiptResponses = append(usersReceiptResponses, row)

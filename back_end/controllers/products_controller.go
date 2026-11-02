@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
 )
 
 func CreateProduct(ctx *gin.Context) {
@@ -28,8 +29,10 @@ func CreateProduct(ctx *gin.Context) {
 }
 
 func ProductsPagination(ctx *gin.Context) {
+
 	var prodsList []modules.Product
 	var totalProducts int64
+	var kitsPerPage int = viper.GetInt("kits_per_page") //get the number of kits per page from the config file
 
 	pageString := ctx.Param("page") //take the page num from the url
 	page, err := strconv.Atoi(pageString)
@@ -37,10 +40,11 @@ func ProductsPagination(ctx *gin.Context) {
         page = 1
     }
 	
-	offset := (page - 1) * 6	//the first prod in the page
+	offset := (page - 1) * kitsPerPage	//the first prod in the page
+
 	initializers.DB_ptr.Model(&modules.Product{}).Count(&totalProducts)	//total products in the DB
 
-	result := initializers.DB_ptr.Limit(6).Offset(offset).Find(&prodsList) //limit of 6 prods per page - pagingtation
+	result := initializers.DB_ptr.Limit(kitsPerPage).Offset(offset).Find(&prodsList) //limit of kitsPerPage constant prods per page - pagingtation
 	if result.Error != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "failed to fetch product"})
 		return
@@ -48,11 +52,23 @@ func ProductsPagination(ctx *gin.Context) {
 
 	maxPage := 1
     if totalProducts > 0 {
-        maxPage = int( (totalProducts + 5) /6 )
+        maxPage = int( (totalProducts + int64(kitsPerPage - 1) ) /int64(kitsPerPage) ) //calculate the max page number - if there are 13 products and 5 per page, maxPage = 3
 	}
 	
-	ctx.JSON(200, gin.H{ "products": prodsList , "maxPage": maxPage })
+//responce following the dto:
+	var prodsListResponse []modules.Product
+	for _, prod := range prodsList {	
+
+		if prod.ProductPhotoUrl == "" {
+			prod.ProductPhotoUrl = viper.GetString("default_kit_image")
+		}
+
+		prodsListResponse = append(prodsListResponse, prod)
+	}
+
+	ctx.JSON(200, gin.H{ "products": prodsListResponse , "maxPage": maxPage })
 }
+
 
 func ShowProduct(ctx *gin.Context) {
 	//getting the products id off the URL:
