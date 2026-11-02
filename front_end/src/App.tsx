@@ -9,6 +9,7 @@ import ManageUsersPage from './pages/AdminPages/ManageUsersPage';
 // import ManageProductsPage from './pages/AdminPages/ManageProductsPage';
 import NavBar from './components/NavBar';
 import LoginPopup from "./components/popups/LoginPopup";
+import ReceipsPage from "./pages/ReceipsPage"
 
 
 function NavbarLayout() {
@@ -62,7 +63,14 @@ export default function App() {
                             <ProductsPage />
                         </ProtectedRoutes>
                     }/>
+
+                    <Route path="/receipts" element={
+                        <ProtectedRoutes isAdminRoute={false}>
+                            <ReceipsPage />
+                        </ProtectedRoutes>
+                    }/>
                     
+
                 </Route>
                 
                 <Route path="*" element={<PageNotFound />} />   

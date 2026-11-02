@@ -8,5 +8,5 @@ func Migrate() {
 	DB_ptr.AutoMigrate(&modules.User{})
 	DB_ptr.AutoMigrate(&modules.Product{})
 	DB_ptr.AutoMigrate(&modules.Receipt{})
-	DB_ptr.AutoMigrate(&modules.ReceiptProductsList{})
+	DB_ptr.AutoMigrate(&modules.ReceiptProducts{})
 }

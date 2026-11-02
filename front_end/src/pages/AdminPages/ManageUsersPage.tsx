@@ -2,6 +2,9 @@ import {Box,Button,Grid,Pagination,Alert,Stack,Typography, Paper, Card , ThemePr
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { FormEvent, useMemo, useState , useEffect} from "react";
 import Users from "../../interfaces/UserInterface"
+import fetchWithValidation from "../../utils/Api/fetchWithValidation";
+
+
 export default function ManageUsersPage() {
 
     const [usersList, setUsersList] = useState<Users[]>([])
@@ -15,8 +18,7 @@ export default function ManageUsersPage() {
 
         const fetchUsers = async() => {
             try{
-                const responce = await fetch(`${import.meta.env.VITE_API_URL}/users`,
-                {
+                const responce = await fetchWithValidation(`${import.meta.env.VITE_API_URL}/users`, {
                     method: "GET",
                     credentials: "include"
                 })
@@ -25,13 +27,11 @@ export default function ManageUsersPage() {
                     setUsersList(data.users)
 
                 } else {
-                    console.log("failed to fetch the products");
-                    <Alert severity="error">failed to fetch the products</Alert>
+                    console.log("failed to fetch the users");
                 }
 
             } catch (error) {
                 console.error("network error", error);
-                <Alert severity="error">request not avilable rn</Alert>
             }
         }
 
@@ -42,7 +42,7 @@ export default function ManageUsersPage() {
     const handleAddUser = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         try {
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/signup`, {
+            const response = await fetchWithValidation(`${import.meta.env.VITE_API_URL}/signup`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -71,7 +71,7 @@ export default function ManageUsersPage() {
     const handleDeleteUser = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         try {
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/deleteUser/${userID}`, {
+            const response = await fetchWithValidation(`${import.meta.env.VITE_API_URL}/deleteUser/${userID}`, {
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json",

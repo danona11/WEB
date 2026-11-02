@@ -5,15 +5,10 @@ import (
 	"my-project/initializers"
 	"my-project/modules"
 	"net/http"
-
+	"my-project/dto"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
-
-type CartProduct struct {
-	ProductID   	uint
-	AmountInCart	uint
-}
 
 func CreateReceipt(ctx *gin.Context) {
 
@@ -24,7 +19,7 @@ func CreateReceipt(ctx *gin.Context) {
 	}
 	var user modules.User = userInfo.(modules.User)
 
-	var cartList []CartProduct
+	var cartList []modules.CreateReceiptItemStruct
 	errBind := ctx.Bind(&cartList)
 	if errBind != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid cart"})
@@ -65,19 +60,19 @@ func CreateReceipt(ctx *gin.Context) {
 					return errSave													//rollback
 				}
 
-				newRecItem := modules.ReceiptProductsList{
+				newRecProd := modules.ReceiptProducts{
 					ReceiptID:     newRec.ReceiptID,
 					ProductID:     prod.ProductID,
 					AmountInCart: cartItem.AmountInCart,
 					ProductPrice:  prod.ProductPrice,
 				}
 
-				result := trCtx.Create(&newRecItem).Error
+				result := trCtx.Create(&newRecProd).Error
 				if result != nil {
 					return result
 				}
 
-				recSumPrice += newRecItem.ProductPrice * float64(cartItem.AmountInCart)
+				recSumPrice += newRecProd.ProductPrice * float64(cartItem.AmountInCart)
 
 			}
 
@@ -96,4 +91,53 @@ func CreateReceipt(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{"message": "receipt created succesfully in the DB"})
+}
+
+
+func GetUsersReceipts(ctx *gin.Context) {
+
+	userInfo, exists := ctx.Get("user")
+	if !exists {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "user unauthorized"})
+		return
+	}
+
+	var user modules.User = userInfo.(modules.User)
+
+	var receipts []modules.Receipt
+
+//gorm automatically queries the receipts, grabs their line items, and fetches the product details for each item in one clean operation.
+	err := initializers.DB_ptr.
+        Where("user_id = ?", user.UserID).
+        	Preload("Products").			//single use table join - fetches the line items for each receipt
+        		Preload("Products.Product").
+        Find(&receipts).Error
+	
+	if err != nil {	
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "failed to fetch receipts"})
+		return
+	}
+
+	var usersReceiptResponses = [] dto.GetUsersReceiptResponse{}
+	var rowIDCounter uint = 0 
+
+	for _, receipt := range receipts {	//iterate through each receipt and create a response object for each one
+		for _, receiptProduct := range receipt.Products {	//iterate through each line product in the receipt
+			var row dto.GetUsersReceiptResponse
+			rowIDCounter++
+			
+			row.RowID = rowIDCounter
+			row.ReceiptID = receipt.ReceiptID
+			row.SumPrice = receipt.SumPrice
+			row.ProductName = receiptProduct.Product.ProductName
+			row.AmountInCart = receiptProduct.AmountInCart
+			row.ProductPrice = receiptProduct.ProductPrice
+			row.ProductPhotoURL = receiptProduct.Product.ProductPhotoUrl
+			
+			usersReceiptResponses = append(usersReceiptResponses, row)
+
+		}
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"receipts": usersReceiptResponses})	//returns for each receipt the list of products and their amount in that receipt
 }

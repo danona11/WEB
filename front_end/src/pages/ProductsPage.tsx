@@ -10,7 +10,7 @@ import AddIcon from '@mui/icons-material/Add'
 import { ProductCardStyle } from "../styles/CardStyle";
 import { GridContainerStyle } from "../styles/GridStyle";
 import { useAppSelector, useAppDispatch } from "../Redux/ReduxHooks";
-import handleValidateFetch from "../utils/Api/handleValidateFetch";
+import fetchWithValidation from "../utils/Api/fetchWithValidation";
 
 export default function ProductsPage() {
 
@@ -51,7 +51,7 @@ export default function ProductsPage() {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const responce = await handleValidateFetch(`${import.meta.env.VITE_API_URL}/products/page/${page}`,
+                const responce = await fetchWithValidation(`${import.meta.env.VITE_API_URL}/products/page/${page}`,
                 {
                     method: "GET",
                     credentials: "include"

@@ -11,7 +11,7 @@ import { ProductCardStyle } from "../styles/CardStyle";
 import { GridContainerStyle } from "../styles/GridStyle";
 import RemoveShoppingCartIcon from '@mui/icons-material/RemoveShoppingCart';
 import DialogPopUp from "../components/popups/DialogPopUp"
-import handleValidateFetch from "../utils/Api/handleValidateFetch";
+import handleValidateFetch from "../utils/Api/fetchWithValidation";
 import { useAppSelector } from "../Redux/ReduxHooks";
 import { setUser } from "../Redux/ReduxUserSlice";
 import CheckoutIcon from '@mui/icons-material/ShoppingCartCheckout';

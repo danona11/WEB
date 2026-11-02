@@ -11,7 +11,7 @@ import ManageProductsIcon from '@mui/icons-material/Inventory';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import { useAppSelector, useAppDispatch } from "../Redux/ReduxHooks";
 import { clearUser } from "../Redux/ReduxUserSlice";
-import handleValidateFetch from "../utils/Api/handleValidateFetch"
+import handleValidateFetch from "../utils/Api/fetchWithValidation"
 
 export default function NavBar() {
 

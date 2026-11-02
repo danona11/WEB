@@ -34,7 +34,7 @@ func GetUsers(ctx *gin.Context){ //gin.context = all the info about the request
 
 /*
 func CreateUser(ctx *gin.Context) {
-	var newUser modules.User
+	var newUser modules.postgersStructures.User
 
 	err := ctx.BindJSON(&newUser)
 	if err != nil {
@@ -53,9 +53,9 @@ func CreateUser(ctx *gin.Context) {
 	ctx.IndentedJSON(http.StatusCreated, newUser)
 }
 
-func GetUserById(id uint) (*modules.User, error) {
+func GetUserById(id uint) (*modules.postgersStructures.User, error) {
 
-	var users_list []modules.User
+	var users_list []modules.postgersStructures.User
 
 	//select * from users => into a list(users_list)
 	result := initializers.DB_ptr.Find(&users_list)
@@ -144,7 +144,7 @@ func SendLogin(ctx *gin.Context) {
 		gin.H{
 			"message": "cookie",
 			"userName":login_user.UserName,
-			"perrmissions":login_user.Permissions,
+			"permissions":login_user.Permissions,
 		})
 }
 
