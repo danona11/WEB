@@ -35,10 +35,7 @@ func GetUsers(ctx *gin.Context){ //gin.context = all the info about the request
 
 func SendLogin(ctx *gin.Context) {
 
-	var login_input struct {
-    	UserName    string `json:"UserName"`
-    	Password 	string `json:"Password"`
-	}
+	var login_input dto.LoginRequest
 
 	err := ctx.Bind(&login_input) //will take the json from the front, and convert it to login_input type
 	if err != nil {
@@ -83,7 +80,6 @@ func SendLogin(ctx *gin.Context) {
 	//sends the cookie to the front, so the front can read it and store the user name and permissions
 	ctx.JSON(http.StatusOK, 
 		gin.H{
-			"message": "cookie",
 			"userName":login_user.UserName,
 			"permissions":login_user.Permissions,
 		})

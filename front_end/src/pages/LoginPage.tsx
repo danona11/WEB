@@ -4,8 +4,7 @@ import { Button } from "@mui/material";
 import DebouncedTextField from "../components/DebouncedTextField"
 import { Typography } from "@mui/material";
 import { clearUser, setUser } from "../Redux/ReduxUserSlice";
-import { useAppSelector, useAppDispatch } from "../Redux/ReduxHooks";
-import { useDispatch } from "react-redux";
+import { useAppDispatch } from "../Redux/ReduxHooks";
 
 export default function LoginPage() {
     
@@ -44,11 +43,11 @@ export default function LoginPage() {
                 }   
             )
             
-            const data = await responce.json()  //login controller sends a json with username and perrmissions
+            const data = await responce.json()  //login controller sends a json with username and permissions
 
             if (responce.ok) {
 
-                dispatch( setUser({ userName: data.userName , permissions: data.perrmissions }) ) 
+                dispatch( setUser({ userName: data.userName , permissions: data.permissions }) ) 
                 nav("/products")
             }
 

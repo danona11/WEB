@@ -120,13 +120,14 @@ func GetUsersReceipts(ctx *gin.Context) {
 		return
 	}
 
-	userReceiptList := make([]dto.GetUsersReceiptResponse, 0, len(receipts)) //preallocate slice with size equal to the number of receipts
+	var recCounter uint = 0
+	userReceiptList := make([]dto.GetUsersReceiptResponse, 0, recCounter ) //preallocate slice with size equal to the number of receipts
 
 	for _, receipt := range receipts {
 
 		var rowIDCounter uint = 0 
 		var productDetails []dto.ReceiptsDetails	//new empty list for each product in the receipt
-
+		
 		for _, receiptProduct := range receipt.Products {
 			
 			rowIDCounter++
@@ -145,8 +146,9 @@ func GetUsersReceipts(ctx *gin.Context) {
 			})
 		
 		}
+		recCounter++
 		userReceiptList = append(userReceiptList,  dto.GetUsersReceiptResponse{
-			ReceiptID:    	receipt.ReceiptID,
+			ReceiptID:    	recCounter,
 			SumPrice:     	receipt.SumPrice,
 			ProductDetails: productDetails,
 		})
