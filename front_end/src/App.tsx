@@ -6,7 +6,7 @@ import ProductsPage from './pages/ProductsPage';
 import CartPage from './pages/CartPage';
 import ProtectedRoutes from './context/ProtectedRoutes';
 import ManageUsersPage from './pages/AdminPages/ManageUsersPage';
-// import ManageProductsPage from './pages/AdminPages/ManageProductsPage';
+import ManageProductsPage from './pages/AdminPages/ManageProductsPage';
 import NavBar from './components/NavBar';
 import LoginPopup from "./components/popups/LoginPopup";
 import ReceipsPage from "./pages/ReceipsPage"
@@ -44,11 +44,11 @@ export default function App() {
                         </ProtectedRoutes>
                     }/>
                     
-                    {/* <Route path="/manageProducts" element={
+                    <Route path="/manageProducts" element={
                         <ProtectedRoutes isAdminRoute={true}>
                             <ManageProductsPage />
                         </ProtectedRoutes>
-                    }/>    */}
+                    }/>   
     {
         //protected non-admin routes accessible to all users who logged in:
     }

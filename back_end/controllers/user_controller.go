@@ -9,7 +9,7 @@ import (
 	"net/http"
 	"os"
 	"time"
-	"my-project/dto"
+	"my-project/dto/UsersDto"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
@@ -17,10 +17,10 @@ import (
 
 func GetUsers(ctx *gin.Context){ //gin.context = all the info about the request
 
-	var users_list []modules.User
+	var users_list []dto.GetUsersResponse
 
-	//select * from users => into a list(users_list)
-	result := initializers.DB_ptr.Find(&users_list)
+	//select * from users => into users_list
+	result := initializers.DB_ptr.Model(&modules.User{}).Find(&users_list)
 
 	if result.Error != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Find opp in the db didnt work"})
@@ -77,21 +77,27 @@ func SendLogin(ctx *gin.Context) {
 	ctx.SetSameSite(http.SameSiteLaxMode)
 	ctx.SetCookie("Authorization", tokenString, 1800, "/", "", false, true) //30 minutes, httponly - onlye the browser and the server can read
 
+	var userResponse = dto.LoginResponse{
+		UserName: login_user.UserName ,
+		Permissions: login_user.Permissions, }
+
 	//sends the cookie to the front, so the front can read it and store the user name and permissions
-	ctx.JSON(http.StatusOK, 
-		gin.H{
-			"userName":login_user.UserName,
-			"permissions":login_user.Permissions,
-		})
+	ctx.JSON(http.StatusOK, gin.H{ "user": userResponse })
 }
 
 func SendSignUp(ctx *gin.Context) {
 
-	var userDetails dto.SignupRequest
+	var userDetails modules.User
 
 	err := ctx.Bind(&userDetails)
 	if err != nil { //couldnt bind into userDetails
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "user details unaccesptable"})
+		return
+	}
+
+	found := initializers.DB_ptr.First(&userDetails, "user_name = ?", userDetails.UserName)
+	if found != nil{
+		ctx.JSON(http.StatusConflict, gin.H{"error": "username already exists"})
 		return
 	}
 
@@ -106,10 +112,10 @@ func SendSignUp(ctx *gin.Context) {
 		UserName: userDetails.UserName,
 		Email:    userDetails.Email,
 		Password: string(hash),
+		Permissions: false,
 	}
 
 	result := initializers.DB_ptr.Create(&newUser)
-	//Note:need to check if user already exists
 
 	if result.Error != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "failed to register new user"})
@@ -132,9 +138,7 @@ func Validate(ctx *gin.Context) {
 	user := userData.(modules.User)
 
 	ctx.JSON(http.StatusOK, gin.H{
-		"message":     "user validated",
 		"userName":    user.UserName,
-		"email":       user.Email,
 		"permissions": user.Permissions,
 	})
 }

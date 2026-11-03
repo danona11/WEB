@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"errors"
-	"my-project/dto"
+	"my-project/dto/ReceiptsDto"
 	"my-project/initializers"
 	"my-project/modules"
 	"net/http"
@@ -131,7 +131,7 @@ func GetUsersReceipts(ctx *gin.Context) {
 		for _, receiptProduct := range receipt.Products {
 			
 			rowIDCounter++
-			productPhotoURL := receiptProduct.Product.ProductPhotoUrl
+			productPhotoURL := receiptProduct.Product.ProductPhotoURL
 			if productPhotoURL == "" {
 				productPhotoURL = viper.GetString("default_kit_image")
 			}

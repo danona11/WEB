@@ -1,9 +1,9 @@
-import {Box,Button,Grid,Pagination,Alert,Stack,Typography, Paper, Card , ThemeProvider, createTheme, CardMedia, CardContent, CardActions, IconButton} from "@mui/material";
+import {Box,Typography} from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { FormEvent, useMemo, useState , useEffect} from "react";
 import Users from "../../interfaces/UserInterface"
 import fetchWithValidation from "../../utils/Api/fetchWithValidation";
-
+import AdminActions from "../../utils/AdminActions/AdminUsersActions";
 
 export default function ManageUsersPage() {
 
@@ -13,6 +13,8 @@ export default function ManageUsersPage() {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [refresh, setRefresh] = useState<boolean>(false)
+    const [rowID, setRowID] = useState()
+
 
     useEffect(() => {
 
@@ -38,119 +40,26 @@ export default function ManageUsersPage() {
         fetchUsers()
     },[refresh])
 
-    
-    const handleAddUser = async (e: FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        try {
-            const response = await fetchWithValidation(`${import.meta.env.VITE_API_URL}/signup`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    userName: userName,
-                    email: email,
-                    password: password
-                }),
-                credentials: "include"});
-
-                if (response.ok) {  //refresh the users, empty the addusers details
-                    setEmail("")
-                    setPassword("")
-                    setUserName("")
-                    setRefresh(true)
-                }
-                else    alert("user email or password inccorect, pls try again")
-
-        } catch (error) {
-            console.error("Error adding user:", error);
-        }
-
-    }
-
-    const handleDeleteUser = async (e: FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        try {
-            const response = await fetchWithValidation(`${import.meta.env.VITE_API_URL}/deleteUser/${userID}`, {
-                method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    userName: userName,
-                    email: email,
-                    password: password
-                }),
-                credentials: "include"
-            });
-
-            if (response.ok) {
-                alert("user deleted successfully");
-            } else {
-                alert("failed to delete user");
-            }
-        } catch (error) {
-            console.error("Error deleting user:", error);
-        }
-    };
 
     const columns = useMemo<GridColDef<Users>[]>( () => [
         {field:'UserID' , headerName: 'id' , width:50 },
-        {field:'UserName' , headerName: 'user name' , width:250 },
-        {field:'Permissions' , headerName: 'permissions' , width:250 },
-        {field:'Email' , headerName: 'email' , width:250 },
-        {field:'AdminFunctions' , headerName: 'admin functions' , width:400 },
-    ], [] ) 
+        {field:'UserName' , headerName: 'user name' , width:150 },
+        {field:'Permissions' , headerName: 'is admin' , width:150 , type:'boolean' ,editable:true},
+        {field:'Email' , headerName: 'email' , width:300 },
+        {field:'RegisterDate' , headerName: 'date first joined' , width:200, type:'dateTime' , valueGetter:( (date) => (!date) ? null : new Date(date) ) },
+        // {field:'actions' , headerName: 'actions', sortable: false , width:400 , renderCell:( (params) => <AdminActions params={params} setRefresh = {setRefresh}/>) },
+    
+    ], [rowID] )    //when rowID changes, rfresh the grid
 
 
     return (
-        <Box className="manage-users-page" sx={{ textAlign: 'center', marginTop: '50px'}}>
+        <Box className="manage-users-page" sx={{ height:600,width:'100%', textAlign: 'center', marginTop: '50px'}}>
             
-            <Typography variant="h3" sx={{textAlign:'center' , mt:3 , mb:3 }}>Manage Users Page - only accessable to admins</Typography>
-            
-            <br></br>
-            <Box sx={{height:400 , width:'100%' }}>
+            <Typography variant='h4' component='h4' sx={{textAlign:'center' , mt:3 , mb:3}}>
+                manage users - admin only
+            </Typography>
                 
-                <DataGrid 
-                    columns={columns} rows={usersList} 
-                    initialState={{
-                        pagination: { paginationModel: {pageSize: 5} }
-                    }} 
-                    pageSizeOptions={[5]}
-                    checkboxSelection
-                    disableRowSelectionOnClick
-                    getRowId={ (row) => row.UserID }
-                />
-
-            </Box>
-
-            <Box className="add-user-form" sx={{ textAlign: 'center', marginTop: '50px' }}>
-
-                <Typography variant="h5" sx={{textAlign:'center' , mt:3 , mb:3 }}>Add User</Typography>
-
-                <form onSubmit={handleAddUser} style={{ marginLeft: '20px', marginRight: '20px' }}>
-                    <label>Username: </label>
-                    <input type="text" value={userName} onChange={(event) => setUserName(event.target.value)} />
-                    
-                    <br></br>
-                    
-                    <label>Email: </label>
-                    
-                    <input type="email" value={email} onChange={(event) => setEmail(event.target.value)} />
-                    
-                    <br></br>
-                    
-                    <label>Password: </label>
-                    
-                    <input type="password" value={password} onChange={(event) => setPassword(event.target.value)} />
-                    
-                    <br></br>
-                    <br></br>
-
-                    <button type="submit">Add User</button>
-                </form>
-            </Box>
-
+            <DataGrid rows={usersList} columns={columns} getRowId={ (row) => (row.UserID) } pageSizeOptions={[5,10,20]} />
         </Box>
-        );
+    )
 }

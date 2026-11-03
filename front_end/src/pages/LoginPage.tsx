@@ -46,8 +46,8 @@ export default function LoginPage() {
             const data = await responce.json()  //login controller sends a json with username and permissions
 
             if (responce.ok) {
-
-                dispatch( setUser({ userName: data.userName , permissions: data.permissions }) ) 
+                dispatch( setUser({ userName: data.user.UserName , permissions: data.user.Permissions }) ) 
+                console.log('username and permissions saved to local storage');
                 nav("/products")
             }
 

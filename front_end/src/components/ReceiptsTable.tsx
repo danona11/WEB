@@ -40,7 +40,7 @@ export default function Row(props: { row: ReceiptsList }) {
                     Order #{row.ReceiptID}
                 </TableCell>
 
-                <TableCell align="right">{row.SumPrice} ILS</TableCell>
+                <TableCell align="right">{row.SumPrice.toFixed(2)} ILS</TableCell>
                 
             </TableRow>
 
@@ -57,11 +57,13 @@ export default function Row(props: { row: ReceiptsList }) {
                             <Table size="small" aria-label="purchases">
                                 <TableHead>
                                     <TableRow>
+
                                         <TableCell>Photo</TableCell>
                                         <TableCell>Product Name</TableCell>
                                         <TableCell align="right">Unit Price</TableCell>
                                         <TableCell align="right">Amount</TableCell>
                                         <TableCell align="right">Total Price</TableCell>
+
                                     </TableRow>
                                 </TableHead>
                                 
@@ -75,11 +77,13 @@ export default function Row(props: { row: ReceiptsList }) {
                                             </TableCell>
                                             
                                             <TableCell>{item.ProductName}</TableCell>
-                                            
-                                            <TableCell align="right">{item.AmountInCart}</TableCell>
-                                            
+                                                                                        
                                             <TableCell align="right">{item.ProductPricePerUnit} ILS</TableCell>
                                         
+                                            <TableCell align="right">{item.AmountInCart}</TableCell>
+
+                                            <TableCell align="right">{ ( item.AmountInCart * item.ProductPricePerUnit).toFixed(2) }</TableCell>
+
                                         </TableRow>
                                     ))}
 

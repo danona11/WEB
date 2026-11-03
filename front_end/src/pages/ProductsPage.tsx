@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import {Box,Button,Grid,Pagination,Stack,Typography, Card , CardMedia, CardContent, CardActions, IconButton} from "@mui/material";
 import AddShoppingCartOutlinedIcon from '@mui/icons-material/AddShoppingCartOutlined';
 import Product from "../interfaces/ProductInterface";
-import { GetLocalUserName } from '../utils/handleLocalUser'
 import { formatProductName } from '../utils/Format'
 import RemoveIcon from '@mui/icons-material/Remove'
 import AddIcon from '@mui/icons-material/Add'
@@ -59,8 +58,8 @@ export default function ProductsPage() {
 
                 if (responce.ok) {
                     const data = await responce.json()
-                    setProductsList(data.products)
-                    setMaxPage(data.maxPage)
+                    setProductsList(data.Products)
+                    setMaxPage(data.MaxPage)
                 }
 
             } catch (error) {
@@ -103,7 +102,7 @@ export default function ProductsPage() {
                     ProductPrice:   prod.ProductPrice,
                     ProductStock:   prod.ProductStock,
                     AmountInCart:   amountToAdd,
-                    ProductPhotoUrl:prod.ProductPhotoUrl
+                    ProductPhotoURL:prod.ProductPhotoURL
                 }
             ]
         }
@@ -158,7 +157,7 @@ export default function ProductsPage() {
                                 <Card className="prodCard" sx={{ ...ProductCardStyle , backgroundColor: (outOfStock || maxedOutInCart) ? '#ffebee' : 'white', opacity: outOfStock ? 0.7 : 1  }}>                                    
                                     <CardMedia  
                                         component="img" 
-                                        image={prod.ProductPhotoUrl || "https://i.pinimg.com/736x/74/49/9f/74499f7623bbe946867f791f863a4f87.jpg"} 
+                                        image={prod.ProductPhotoURL || "https://i.pinimg.com/736x/74/49/9f/74499f7623bbe946867f791f863a4f87.jpg"} 
                                         alt=""
                                         sx={{ height: 300, objectFit:'contain', padding:'10px'}}
                                     />

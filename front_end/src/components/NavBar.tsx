@@ -12,7 +12,8 @@ import AccountCircle from '@mui/icons-material/AccountCircle';
 import { useAppSelector, useAppDispatch } from "../Redux/ReduxHooks";
 import { clearUser } from "../Redux/ReduxUserSlice";
 import handleValidateFetch from "../utils/Api/fetchWithValidation"
-
+import LogoutIcon from '@mui/icons-material/Logout';
+import { SpaceBar } from "@mui/icons-material"
 export default function NavBar() {
 
 
@@ -66,21 +67,21 @@ export default function NavBar() {
                     {/*conditional rendoring - only show to admins(perm===true) */}
                     { Permissions&&(<> 
                         
-                        <Button color="inherit" startIcon={<ManageAccountsIcon />} onClick={() => nav("/manageUsers")}>
+                        <Button color="inherit" endIcon={<ManageAccountsIcon />} onClick={() => nav("/manageUsers")} >
                             Manage Users
                         </Button>    
 
-                        <Button color="inherit" startIcon={<ManageProductsIcon />} onClick={() => nav("/manageProducts")}>
+                        <Button color="inherit" endIcon={<ManageProductsIcon />} onClick={() => nav("/manageProducts")} >
                             Manage Products
                         </Button>
 
                     </>)}
 
-                    <Button color="inherit" startIcon={<StorefrontIcon />} onClick={() => nav("/products")}>
+                    <Button color="inherit" endIcon={<StorefrontIcon />} onClick={() => nav("/products")} sx={{padding:'20px'}}>
                         Products
                     </Button>
                     
-                    <Button color="inherit" startIcon={<ShoppingCartIcon />} onClick={() => nav("/cart")}>
+                    <Button color="inherit" endIcon={<ShoppingCartIcon />} onClick={() => nav("/cart")} sx={{padding:'20px'}}>
                         Cart
                     </Button>
 
@@ -105,12 +106,15 @@ export default function NavBar() {
                             transformOrigin= {{ vertical: 'top', horizontal: 'right' }}
                             open={Boolean(anchorEl)}
                             onClose={handleUserPopupClose}
+                            sx={{width:'500px' , maxWidth:'1000px'}}
                         >
+                            <Typography variant="body1" sx={{textAlign:'center' , }}> hello {localStorage.getItem('LocalUserName')}</Typography>
+
                             <MenuItem onClick={ () => { 
                                         handleUserPopupClose()
                                         setLogoutPopUp(true)    //open dialog confirm-logout
                                     }} 
-                            >log out</MenuItem>
+                            >Log-out <LogoutIcon/> </MenuItem>
 
                             <MenuItem onClick={ () => { 
                                         handleUserPopupClose()

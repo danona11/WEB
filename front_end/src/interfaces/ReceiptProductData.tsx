@@ -1,7 +1,10 @@
 export interface ReceiptProductDetails{
     RowID:              number
     SumPrice:           number
-    ProductName:        string  
+    ProductName:        string 
+    ProductTeam:        string
+    ProductDesign:      string
+    ProductYear:        number 
     AmountInCart:       number
     ProductPricePerUnit:number
     ProductPhotoURL:    string

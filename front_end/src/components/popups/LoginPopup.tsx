@@ -1,7 +1,7 @@
 import { FormEvent, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../Redux/ReduxHooks";
 import { setUser , closeLoginPopup } from "../../Redux/ReduxUserSlice";
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Typography } from "@mui/material";
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
 import DebouncedTextField from "../DebouncedTextField";
 
 
@@ -34,10 +34,10 @@ export default function LoginPopup(){
                 credentials: "include"
             })
             
-            const data = await responce.json()  //login controller sends a json with username and perrmissions
+            const data = await responce.json()  //login controller sends a json with username and permissions
 
             if (responce.ok) {  //authorized user
-                dispatch( setUser({ userName: data.userName , permissions: data.perrmissions }) ) 
+                dispatch( setUser({ userName: data.user.UserName , permissions: data.user.Permissions }) ) 
                 dispatch(closeLoginPopup())
 
                 setUserName("")  //clear the input fields for next time the popup opens

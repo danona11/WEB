@@ -4,4 +4,5 @@ export default interface UserInterface{
 	Email: string
 	Password: string
 	Permissions: boolean
+	RegisterDate: string
 }

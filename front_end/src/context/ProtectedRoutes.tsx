@@ -1,3 +1,4 @@
+import { Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 
@@ -36,9 +37,11 @@ export default function ProtectedRoutes( { children , isAdminRoute = false }: { 
     }, []);
 
 
-    //for when the backend is still checking if the user is authenticated or not,
-    if (auth === null) {
-        return <div>Loading...</div>
+    //for when the backend is still checking if the user is authenticated/authorized or not - 
+    //so it doesn't kick out until the responce from the server:
+    if ( ( auth === null ) || ( (isAdminRoute) && (permissions === null) ) ) {
+        
+        return <Typography variant='h3'>Loading...</Typography>
     }    
     
     //if the user is not authenticated, redirect to the login page
@@ -48,7 +51,7 @@ export default function ProtectedRoutes( { children , isAdminRoute = false }: { 
 
     //if the user is authenticated: 
     //if route is admin route true and if the user has admin permissions:
-    if ( isAdminRoute && !permissions ) {
+    if ( isAdminRoute && permissions === false ) {
         alert("only users with admin permissions can access this page");
         return <Navigate to="/products" />;
     }

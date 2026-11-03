@@ -173,7 +173,7 @@ export default function CartPage(){
                                 <Card className="prodCard" sx={{ ...ProductCardStyle, backgroundColor: outOfStock ? '#ffcccc' : 'white', opacity: outOfStock ? 0.7 : 1  }}>                                    
                                     <CardMedia  
                                         component="img" 
-                                        image={ item.ProductPhotoUrl }
+                                        image={ item.ProductPhotoURL }
                                         alt=""
                                         sx={{ height: 300, objectFit:'contain'}}
                                     />

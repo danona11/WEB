@@ -51,7 +51,7 @@ func main() {
 	protectedRoutes.DELETE("/deleteProduct/:id", controllers.DeleteProduct)
 	protectedRoutes.GET("/products", controllers.ProductsPagination)
 	protectedRoutes.GET("/products/page/:page", controllers.ProductsPagination)
-	protectedRoutes.GET("/products/:id", controllers.ShowProduct)
+	protectedRoutes.GET("/product/:id", controllers.SearchProduct)
 	
 	//receipts controllers:
 	protectedRoutes.POST("/checkOutCart", controllers.CreateReceipt)
