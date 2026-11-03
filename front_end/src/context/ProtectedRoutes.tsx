@@ -23,9 +23,9 @@ export default function ProtectedRoutes( { children , isAdminRoute = false }: { 
     },[])
 
     useEffect( () => {  //check authorization/athentication after login in the popup - in case switched from admin to non admin
-        if (auth === false && popup === false) {    //if the user is not auth, run handleVerifyAuth incase auth state hasn't changed yet
-            handleVerifyAuth
-        }
+        if( ( auth === false ) && ( popup === false ) ){    //so it dosn't run every time popup changes the conditions:   
+            handleVerifyAuth                        //  auth === false => runs only when popup closes, not opens
+        }                                           //  popup === false => so doesn't run but popup hasn't opend yet - popup === false, on mount so will run and ruin popup
     },[popup])
     
     const handleVerifyAuth = async () => {
