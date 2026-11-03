@@ -1,8 +1,9 @@
 import { FormEvent, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../Redux/ReduxHooks";
-import { setUser , closeLoginPopup } from "../../Redux/ReduxUserSlice";
+import { setUser , closeLoginPopup, clearUser } from "../../Redux/ReduxUserSlice";
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
 import DebouncedTextField from "../DebouncedTextField";
+import { useNavigate } from "react-router-dom";
 
 
 export default function LoginPopup(){
@@ -15,6 +16,8 @@ export default function LoginPopup(){
 //the state of LoginPopupOpen userSlice will chnage to true when the user fetches unauthorizred
 //the whole component will reRun when openPopup value chnges and then the dialog ui will show
     const openPopup = useAppSelector( state => state.user.LoginPopupOpen )
+
+    const nav = useNavigate()
 
     const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
             
@@ -54,6 +57,16 @@ export default function LoginPopup(){
         }
     }
 
+    //in case the user can't login - exit to login page
+    const cantLogin = () => {
+
+        dispatch( clearUser() )
+
+        dispatch(closeLoginPopup())// Closes the popup
+
+        nav('/login')
+    }
+
     return (   
         <Dialog 
             open={openPopup} 
@@ -82,7 +95,10 @@ export default function LoginPopup(){
                 </DialogContent>        
 
                 <DialogActions> 
-                    
+                    <Button onClick={cantLogin} color="error">
+                        cant login? logout
+                    </Button>
+
                     <Button type="submit" variant="contained">
                         log-in
                     </Button>

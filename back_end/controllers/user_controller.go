@@ -13,25 +13,55 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
+	"github.com/spf13/viper"
+	"strconv"
 )
 
 func GetUsers(ctx *gin.Context){ //gin.context = all the info about the request
 
-	var users_list []dto.GetUsersResponse
+	var users_list []modules.User
+	var usersPerPage int = viper.GetInt("pagination_per_page") //get the const number of kits per page from the config file
 
-	//select * from users => into users_list
-	result := initializers.DB_ptr.Model(&modules.User{}).Find(&users_list)
+	pageString := ctx.Param("page") //take the page from the url
+	page, err := strconv.Atoi(pageString)
+	if err != nil || page < 1 {		//incase of an uknown page number - go to page 1
+        page = 1
+    }
+		
+	var totalUsers int64
+	initializers.DB_ptr.Model(&modules.User{}).Count(&totalUsers)	//total useructs in the DB
+	
+	offset := (page - 1) * usersPerPage	//the first user in the page
 
+	result := initializers.DB_ptr.Order("user_id asc").Limit(usersPerPage).Offset(offset).Find(&users_list) //limit of kitsPerPage constant users per page - pagingtation
 	if result.Error != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Find opp in the db didnt work"})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "failed to fetch users in page" + pageString })
 		return
 	}
 
+	maxPage := 1
+    if totalUsers > 0 {
+        maxPage = int( (totalUsers + int64(usersPerPage - 1) ) /int64(usersPerPage) )//calculate the max page number - if there are 13 useructs and 5 per page, maxPage = 3
+	}
+	
+	var response []dto.GetUsersResponse
+	for _, user := range users_list {
+		
+		userRes := dto.GetUsersResponse{
+			UserID: 		user.UserID,
+			UserName:		user.UserName,
+			Email:			user.Email,
+			Permissions:	user.Permissions,
+			CreatedAt:		user.CreatedAt,
+		}
+
+		response = append(response, userRes)
+	}
+
 	//will return the users_list in json form:
-	ctx.JSON(http.StatusOK, gin.H{"users":users_list })
+	ctx.JSON(http.StatusOK, gin.H{ "Users":response , "MaxPage": maxPage , "UsersPerPage": usersPerPage })
 
 }
-
 
 func SendLogin(ctx *gin.Context) {
 
@@ -138,8 +168,8 @@ func Validate(ctx *gin.Context) {
 	user := userData.(modules.User)
 
 	ctx.JSON(http.StatusOK, gin.H{
-		"userName":    user.UserName,
-		"permissions": user.Permissions,
+		"UserName":    user.UserName,
+		"Permissions": user.Permissions,
 	})
 }
 
@@ -152,11 +182,44 @@ func Logout(ctx *gin.Context) {
 }
 
 
-func DeleteUser(ctx *gin.Context) {
+func UpdateUser(ctx *gin.Context) {
+	//getting the user id off the URL:
+	user_id := ctx.Param("id")
 
+	var upd_user modules.User	//the updated fields
+	ctx.Bind(&upd_user)
+	
+	var old_user modules.User
+
+	//select user from where id = user_id:
+	result := initializers.DB_ptr.First(&old_user, user_id)
+	if result.Error != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "couldnt find user"})
+		return
+	}
+
+	initializers.DB_ptr.Model(&old_user).Updates(modules.User{
+			
+		UserName:		upd_user.UserName,
+		Email:			upd_user.Email,
+		Permissions:	upd_user.Permissions,
+	})
+
+	ctx.JSON(200, gin.H{"Update": old_user})
 }
 
+func DeleteUser(ctx *gin.Context) {
+	//getting the user id off the URL:
+	userID := ctx.Param("id")
 
+	result := initializers.DB_ptr.Delete(&modules.User{}, userID)
+	if result.Error != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "couldnt find user to delete"})
+		return
+	}
+
+	ctx.JSON(200, gin.H{"message": "successfully deleted user"})
+}
 
 /*
 func CreateUser(ctx *gin.Context) {

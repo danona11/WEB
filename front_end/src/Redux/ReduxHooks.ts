@@ -6,6 +6,4 @@ import type { RootState, AppDispatch } from './ReduxStore';
 //                                        and the AppDispatch - the types used in action to dispatch (i think)
 
 export const useAppDispatch = () => useDispatch<AppDispatch>()
-
-
 export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector

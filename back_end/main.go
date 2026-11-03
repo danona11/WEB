@@ -42,17 +42,18 @@ func main() {
 
 	//user controllers:
 	protectedRoutes.POST("/logout", controllers.Logout)
-	protectedRoutes.GET("/users", controllers.GetUsers)
+	protectedRoutes.GET("/users/page/:id", controllers.GetUsers)
 
 
 	//products controllers:
 	protectedRoutes.POST("/addProduct", controllers.CreateProduct)
 	protectedRoutes.PUT("/updateProduct/:id", controllers.UpdateProduct)
 	protectedRoutes.DELETE("/deleteProduct/:id", controllers.DeleteProduct)
-	protectedRoutes.GET("/products", controllers.ProductsPagination)
-	protectedRoutes.GET("/products/page/:page", controllers.ProductsPagination)
+	protectedRoutes.GET("/products", controllers.GetProducts)
+	protectedRoutes.GET("/products/page/:page", controllers.GetProducts)
 	protectedRoutes.GET("/product/:id", controllers.SearchProduct)
-	
+
+
 	//receipts controllers:
 	protectedRoutes.POST("/checkOutCart", controllers.CreateReceipt)
 	protectedRoutes.GET("/userReceipts", controllers.GetUsersReceipts)

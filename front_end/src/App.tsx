@@ -32,14 +32,13 @@ export default function App() {
                 <Route path="/" element={<LoginPage />} />
                 <Route path="/signUp" element={<SignUpPage />} />
 
-
     {
         //protected admin routes only accessible to users with admin permissions:
     }               
                 <Route element={<NavbarLayout/>}>   {/*navbar will apear in all of the protectedRoutes*/}
 
                     <Route  path="/manageUsers" element={
-                        <ProtectedRoutes isAdminRoute={false}>
+                        <ProtectedRoutes isAdminRoute={true}>
                             <ManageUsersPage />
                         </ProtectedRoutes>
                     }/>

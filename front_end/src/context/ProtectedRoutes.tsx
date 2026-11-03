@@ -1,16 +1,34 @@
-import { Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
+import LoginPopup from '../components/popups/LoginPopup'
+import { useAppDispatch, useAppSelector } from '../Redux/ReduxHooks'
+import { openLoginPopup } from '../Redux/ReduxUserSlice';
 
 export default function ProtectedRoutes( { children , isAdminRoute = false }: { children: React.ReactNode , isAdminRoute: boolean }) {
     
     const [auth , setAuth ] = useState<boolean | null>(null);
     const [permissions , setPermissions ] = useState<boolean | null>(null);
 
-    useEffect( () => {
+    const dispatch = useAppDispatch()   
+    const popup:boolean = useAppSelector( (state:any) => state.user.LoginPopupOpen )  //the current state of LoginPopupOpen
 
-        const handlevVerifyAuth = async () => {
 
+//when user makes request check validate(on mount), 
+//and when the login popup closes so if he is a different user now, want to check authorization again
+    
+    useEffect( () => {  //check authorization/athentication on clicking route
+
+        handleVerifyAuth
+    },[])
+
+    useEffect( () => {  //check authorization/athentication after login in the popup - in case switched from admin to non admin
+        if (auth === false && popup === false) {    //if the user is not auth, run handleVerifyAuth incase auth state hasn't changed yet
+            handleVerifyAuth
+        }
+    },[popup])
+    
+    const handleVerifyAuth = async () => {
         try{
             const response = await fetch(`${import.meta.env.VITE_API_URL}/validate`, {
                 method: 'GET',
@@ -18,24 +36,21 @@ export default function ProtectedRoutes( { children , isAdminRoute = false }: { 
             });
 
             if (response.ok) {
-                setAuth(true);
-                const data = await response.json();
-                setPermissions(data.permissions);
-            }
-
-            else {
-                setAuth(false);            
+                setAuth(true)
+                const data = await response.json()
+                setPermissions(data.Permissions)
+            
+            }else{
+                setAuth(false);   
+                dispatch(openLoginPopup())
             }
         } 
         catch(error){
-            console.error("Error checking authentication:", error);
-            setAuth(false);
+            console.error("Error checking authentication: ", error)
+            setAuth(false)
+            dispatch(openLoginPopup())
         }
-        
     }
-        handlevVerifyAuth();
-    }, []);
-
 
     //for when the backend is still checking if the user is authenticated/authorized or not - 
     //so it doesn't kick out until the responce from the server:
@@ -44,9 +59,14 @@ export default function ProtectedRoutes( { children , isAdminRoute = false }: { 
         return <Typography variant='h3'>Loading...</Typography>
     }    
     
-    //if the user is not authenticated, redirect to the login page
+    //if the user is not authenticated, open loginPopup
     if (auth === false) {
-        return <Navigate to="/login" />;
+        return( //keep the backround page alive, while the popup is open: (children is the backround page comp')
+            
+            <Box sx={{ filter: 'blur(4px)' , pointerEvents:'none'}}>
+                {children}
+            </Box>
+        )
     }
 
     //if the user is authenticated: 
@@ -56,5 +76,7 @@ export default function ProtectedRoutes( { children , isAdminRoute = false }: { 
         return <Navigate to="/products" />;
     }
 
-    return children;
+    return (//render the page the protected route was protecting
+        <>{children}</>
+    )
 }

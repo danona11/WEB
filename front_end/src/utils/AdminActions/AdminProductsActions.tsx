@@ -4,20 +4,20 @@ import EditIcon from '@mui/icons-material/Edit';
 import { FormEvent, useState } from "react";
 import fetchWithValidation from "../../utils/Api/fetchWithValidation";
 import DialogPopUp from "../../components/popups/DialogPopUp"
+import Product from "../../interfaces/ProductInterface";
 
 
 
 export const AdminProductsActions = ( params:any , setRefresh: React.Dispatch<React.SetStateAction<boolean>> ) => {
 
+    const prod:Product = params.row
 
-    const prod = params.row
-
-    const [productName, setProductName] =   useState<string>(prod.ProductName)
-    const [productTeam, setProductTeam] =   useState<string>(prod.ProductTeam)
-    const [productYear, setProductYear] = useState<number>(prod.productYear)
-    const [productDesign, setProductDesign] = useState<string>(prod.productDesign)
-    const [productPrice, setProductPrice] = useState<number>(prod.ProductPrice)
-    const [productStock, setProductStock] = useState<number>(prod.productStock)
+    const [productName, setProductName]     =   useState<string>(prod.ProductName)
+    const [productTeam, setProductTeam]     =   useState<string>(prod.ProductTeam)
+    const [productYear, setProductYear]     =   useState<number>(prod.ProductYear)
+    const [productDesign, setProductDesign] =   useState<string>(prod.ProductDesign)
+    const [productPrice, setProductPrice]   =   useState<number>(prod.ProductPrice)
+    const [productStock, setProductStock]   =   useState<number>(prod.ProductStock)
 
     const [openPopupDelete , setOpenPopupDelete] = useState<boolean>(false)
     const [openPopupUpdate , setOpenPopupUpdate] = useState<boolean>(false)
@@ -92,9 +92,9 @@ export const AdminProductsActions = ( params:any , setRefresh: React.Dispatch<Re
             if (response.ok){
                 setOpenPopupUpdate(false)   //close popup when succesfully added, and got statusok
                 setRefresh( old => !old )
-                alert("product updated successfully");
+                console.log("product updated successfully");
             }    
-            else                alert("failed to update product");
+            else    console.log("failed to update product");
 
         } catch(error) {
             console.error("Error updating product:", error);

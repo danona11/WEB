@@ -25,7 +25,7 @@ func CreateProduct(ctx *gin.Context) {
 	}
 
 	if !utils.IsValidYear(productInfo.ProductYear) {
-        ctx.JSON(http.StatusBadRequest, gin.H{"error": `Invalid year - must be between 2020-2026` })
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("Invalid year - must be between %d - %d", utils.MinYear , utils.MaxYear) })
         return
     }
 
@@ -38,11 +38,10 @@ func CreateProduct(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"message": "successfully added product"})
 }
 
-func ProductsPagination(ctx *gin.Context) {
+func GetProducts(ctx *gin.Context) {
 
 	var prodsList []modules.Product
-	var totalProducts int64
-	var kitsPerPage int = viper.GetInt("kits_per_page") //get the const number of kits per page from the config file
+	var kitsPerPage int = viper.GetInt("pagination_per_page") //get the const number of kits per page from the config file
 
 	pageString := ctx.Param("page") //take the page num from the url
 	page, err := strconv.Atoi(pageString)
@@ -50,19 +49,19 @@ func ProductsPagination(ctx *gin.Context) {
         page = 1
     }
 	
-	offset := (page - 1) * kitsPerPage	//the first prod in the page
-
+	var totalProducts int64
 	initializers.DB_ptr.Model(&modules.Product{}).Count(&totalProducts)	//total products in the DB
 
-	result := initializers.DB_ptr.Limit(kitsPerPage).Offset(offset).Find(&prodsList) //limit of kitsPerPage constant prods per page - pagingtation
+	offset := (page - 1) * kitsPerPage	//the first prod in the page
+	result := initializers.DB_ptr.Order("product_id asc").Limit(kitsPerPage).Offset(offset).Find(&prodsList) //limit of kitsPerPage constant prods per page - pagingtation
 	if result.Error != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "failed to fetch product"})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "failed to fetch products in page "+ pageString })
 		return
 	}
 
 	maxPage := 1
     if totalProducts > 0 {
-        maxPage = int( (totalProducts + int64(kitsPerPage - 1) ) /int64(kitsPerPage) ) //calculate the max page number - if there are 13 products and 5 per page, maxPage = 3
+        maxPage = int( (totalProducts + int64(kitsPerPage - 1) ) /int64(kitsPerPage) )//calculate the max page number - if there are 13 products and 5 per page, maxPage = 3
 	}
 	
 	var response []dto.GetProductsResponse
@@ -89,7 +88,6 @@ func ProductsPagination(ctx *gin.Context) {
 	ctx.JSON(200, gin.H{ "Products": response , "MaxPage": maxPage , "ProductsPerPage": kitsPerPage})
 }
 
-
 func SearchProduct(ctx *gin.Context) {
 	//getting the products id off the URL:
 	prod_id := ctx.Param("id")
@@ -108,9 +106,9 @@ func SearchProduct(ctx *gin.Context) {
 
 func UpdateProduct(ctx *gin.Context) {
 	//getting the products id off the URL:
-	prod_id := ctx.Param("id")				//the product to update
+	prod_id := ctx.Param("id")		//the product to update
 
-	var upd_prod dto.UpdateProductRequest	//the updated fields
+	var upd_prod modules.Product	//the updated fields
 	ctx.Bind(&upd_prod)
 	
 	if !utils.IsValidDesign(upd_prod.ProductDesign) {
