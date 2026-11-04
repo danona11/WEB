@@ -5,6 +5,7 @@ import DebouncedTextField from "../components/DebouncedTextField"
 import { Typography } from "@mui/material";
 import { clearUser, setUser } from "../Redux/ReduxUserSlice";
 import { useAppDispatch } from "../Redux/ReduxHooks";
+import { openSnackBar } from "../Redux/ReduxPopupSlice";
 
 export default function LoginPage() {
     
@@ -46,18 +47,30 @@ export default function LoginPage() {
             const data = await responce.json()  //login controller sends a json with username and permissions
 
             if (responce.ok) {
+                
                 dispatch( setUser({ userName: data.user.UserName , permissions: data.user.Permissions }) ) 
-                console.log('username and permissions saved to local storage');
+
+                dispatch( openSnackBar({    //open the snackbar alert - successfull
+                    message: 'succesfully login - shop away',
+                    severity: "success" ,
+                }))                
                 nav("/products")
             }
 
             else{
-                console.log('invalid username or password');
+                dispatch( openSnackBar({    //open the snackbar alert - successfull
+                    message: 'error loging in - now login',
+                    severity: "error" ,
+                }))            
             }               
         }
         
         catch(error){
-            console.error("network error", error);
+            console.error("network error", error)
+            dispatch( openSnackBar({    //open the snackbar alert - successfull
+                message: 'error loging in',
+                severity: "error" ,
+            }))
         }
     }
 

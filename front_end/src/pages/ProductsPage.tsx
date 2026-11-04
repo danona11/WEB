@@ -10,6 +10,7 @@ import { ProductCardStyle } from "../styles/CardStyle";
 import { GridContainerStyle } from "../styles/GridStyle";
 import { useAppSelector, useAppDispatch } from "../Redux/ReduxHooks";
 import fetchWithValidation from "../utils/Api/fetchWithValidation";
+import { openSnackBar } from "../Redux/ReduxPopupSlice";
 
 export default function ProductsPage() {
 

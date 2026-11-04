@@ -7,7 +7,7 @@ import {GetLocalUserName,GetLocalUserPermissions,RemoveLocalUser,SetLocalUser} f
 const initialState: PopupsState = {
     LoginPopupOpen: false ,
     SnackBarOpen: false ,
-    SnackBarSeverity: 'messageError' ,
+    SnackBarSeverity: "error" ,
     SnackBarMessage: 'set snackbar message' ,
 }
 
@@ -26,7 +26,7 @@ export const popupsSlice = createSlice({
             state.LoginPopupOpen = false
         },
         
-        openSnackBar: (state , action: PayloadAction<{ message: string , severity: "messageError" | "messageSuccess" }>) => {
+        openSnackBar: (state , action: PayloadAction<{ message: string , severity: "error" | "success" }>) => {
             
             state.SnackBarOpen = true
             state.SnackBarMessage = action.payload.message

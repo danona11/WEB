@@ -10,11 +10,15 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import ReceiptsTable from "../components/ReceiptsTable";
+import { useAppDispatch } from "../Redux/ReduxHooks";
+import { openSnackBar } from "../Redux/ReduxPopupSlice";
 
 
 export default function ReceipsPage() {
 
     const [receiptsList, setReceiptsList] = useState<ReceiptsList[]>([])
+
+    const dispatch = useAppDispatch()
 
     useEffect(() => {
         const handleGetUserReceipts = async () => {
@@ -25,6 +29,10 @@ export default function ReceipsPage() {
                 })
 
                 if (!responce.ok) {
+                    dispatch( openSnackBar({    //open the snackbar alert - successfull
+                        message: 'error loging in',
+                        severity: "error" ,
+                    }))
                     console.log("failed to fetch the user receipts")
                 
                 }else {

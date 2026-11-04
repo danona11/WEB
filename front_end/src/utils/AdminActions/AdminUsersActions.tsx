@@ -69,15 +69,15 @@ export const AdminUsersActions = (params:any , setRefresh: React.Dispatch<React.
                 setRefresh( old => !old )
 
                 dispatch( openSnackBar({    //open the snackbar alert - successfull
-                    message: 'succesfully deleted user',
-                    severity: 'messageSuccess' ,
+                    message: "succesfully deleted user",
+                    severity: "success" ,
                 }))
 
             } else{
                 
                 dispatch( openSnackBar({   //open the snackbar alert - error
                     message: 'error deleted user',
-                    severity: 'messageError' ,
+                    severity: "success" ,
                 }))
             }
 
@@ -86,7 +86,7 @@ export const AdminUsersActions = (params:any , setRefresh: React.Dispatch<React.
 
             dispatch( openSnackBar({   //open the snackbar alert - error
                 message: 'error deleted user' + error ,
-                severity: 'messageError' ,
+                severity: "success" ,
             }))
         }
     }

@@ -5,6 +5,8 @@ import Box from '@mui/material/Box';
 import { Typography } from "@mui/material";
 import { Button } from "@mui/material";
 import DebouncedTextField from "../components/DebouncedTextField"
+import { useAppDispatch } from "../Redux/ReduxHooks";
+import { openSnackBar } from "../Redux/ReduxPopupSlice";
 
 
 export default function SignUpPage() {
@@ -16,7 +18,8 @@ export default function SignUpPage() {
 
 //Link will send the client straight to the next page, without waiting for the responce of the BE
 //NAV: when pressing a button for fetching 
-    const nav = useNavigate();  
+    const nav = useNavigate()
+    const dispatch = useAppDispatch()
 
 //when the user presses the signup button th efunction will activate:
     const handleSignUp = async (e: FormEvent<HTMLFormElement>) => {
@@ -41,17 +44,26 @@ export default function SignUpPage() {
             )
 
             if (response.ok) {
+                dispatch( openSnackBar({    //open the snackbar alert - successfull
+                    message: 'succesfully signed up - now login',
+                    severity: "success" ,
+                }))
                 nav("/login")
             }
 
             else{
-                <Alert severity="error">failed to fetch the products</Alert>
+                dispatch( openSnackBar({    //open the snackbar alert - successfull
+                    message: "error signing up - please try again",
+                    severity: "error" ,
+                }))
             }
         }
         
         catch(error){
-            console.error("network error", error);
-            <Alert severity="error">request not avilable rn</Alert>
+            dispatch( openSnackBar({    //open the snackbar alert - successfull
+                message: "request not avilable rn",
+                severity: "error" ,
+            }))
         }
     }
 

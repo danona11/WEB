@@ -13,6 +13,8 @@ import DialogPopUp from "../components/popups/DialogPopUp"
 import handleValidateFetch from "../utils/Api/fetchWithValidation";
 import { useAppSelector } from "../Redux/ReduxHooks";
 import CheckoutIcon from '@mui/icons-material/ShoppingCartCheckout';
+import { useAppDispatch } from "../Redux/ReduxHooks";
+import { openSnackBar } from "../Redux/ReduxPopupSlice";
 
 export default function CartPage(){
     
