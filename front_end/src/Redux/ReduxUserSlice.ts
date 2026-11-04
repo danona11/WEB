@@ -35,7 +35,6 @@ export const userSlice = createSlice({
             
             RemoveLocalUser()
         },
-
     }
 })
 
