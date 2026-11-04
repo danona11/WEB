@@ -1,6 +1,7 @@
 import { FormEvent, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../Redux/ReduxHooks";
-import { setUser , closeLoginPopup, clearUser } from "../../Redux/ReduxUserSlice";
+import { setUser , clearUser } from "../../Redux/ReduxUserSlice";
+import { openSnackBar , openLoginPopup , closeLoginPopup } from "../../Redux/ReduxPopupSlice";
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
 import DebouncedTextField from "../DebouncedTextField";
 import { useNavigate } from "react-router-dom";
@@ -15,7 +16,7 @@ export default function LoginPopup(){
 
 //the state of LoginPopupOpen userSlice will chnage to true when the user fetches unauthorizred
 //the whole component will reRun when openPopup value chnges and then the dialog ui will show
-    const openPopup = useAppSelector( state => state.user.LoginPopupOpen )
+    const loginPopupOpen = useAppSelector( (state) => state.popup.LoginPopupOpen )
 
     const nav = useNavigate()
 
@@ -69,7 +70,7 @@ export default function LoginPopup(){
 
     return (   
         <Dialog 
-            open={openPopup} 
+            open={ loginPopupOpen } 
             onClose={ (event,reason) => { if(reason === 'backdropClick' || reason === 'escapeKeyDown') return }}    //closing the popup through pressing outside it or pressing esc wont close the popup(onclose(return))
             aria-labelledby="login-dialog-title"
             aria-describedby="login-dialog-description"
@@ -77,7 +78,7 @@ export default function LoginPopup(){
         >
             
             <DialogTitle id="login-dialog-title">token expired - confirm user</DialogTitle>
-            <form className="login-page" onSubmit={handleLogin} style= {{maxWidth: '400px', margin: '0 auto', padding: '20px' , textAlign: 'center'}}>
+            <form className="login-page" onSubmit={handleLogin} style= {{maxWidth: '400px', maxHeight:'300px' ,margin: '0 auto', padding: '20px' , textAlign: 'center'}}>
                 <DialogContent>
                                             
                         <DebouncedTextField 
@@ -94,9 +95,9 @@ export default function LoginPopup(){
 
                 </DialogContent>        
 
-                <DialogActions> 
+                <DialogActions sx={{ justifyContent:'space-between'}}> 
                     <Button onClick={cantLogin} color="error">
-                        cant login? logout
+                        can't log-in: log-out
                     </Button>
 
                     <Button type="submit" variant="contained">

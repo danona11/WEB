@@ -143,19 +143,19 @@ export const AdminProductsActions = ( params:any , setRefresh: React.Dispatch<Re
                 <form onSubmit={handleUpdateProduct} style={{ marginLeft: '20px', marginRight: '20px' }}>
                     <DialogTitle>update Product from stock</DialogTitle>
                     <DialogContent>                        
-                        <TextField label="kit team: "   type="text"     value={productTeam} onChange={ (event) => setProductTeam(event.target.value) } required />
+                        <TextField label="kit team: "   type="text"     value={productTeam} onChange={ (event) => setProductTeam(event.target.value) } />
                         
-                        <TextField label="kit year: "   type="number"   value={productYear} onChange={ (event) => setProductYear(Number(event.target.value)) } required />
+                        <TextField label="kit year: "   type="number"   value={productYear} onChange={ (event) => setProductYear(Number(event.target.value)) } />
                         
-                        <TextField label="kit design: " type="text"     value={productDesign} onChange={ (event) => setProductDesign(event.target.value) } required />
+                        <TextField label="kit design: " type="text"     value={productDesign} onChange={ (event) => setProductDesign(event.target.value) } />
                         
-                        <TextField label="kit price: "  type="number"   value={productPrice} onChange={ (event) => setProductPrice(Number(event.target.value)) } required />
+                        <TextField label="kit price: "  type="number"   value={productPrice} onChange={ (event) => setProductPrice(Number(event.target.value)) } />
                         
-                        <TextField label="kit stock: "  type="number"   value={productStock} onChange={ (event) => setProductStock(Number(event.target.value)) } required />
+                        <TextField label="kit stock: "  type="number"   value={productStock} onChange={ (event) => setProductStock(Number(event.target.value)) } />
 
                     </DialogContent>
                     <DialogActions>
-                        <Button type="submit" color="primary">
+                        <Button type="submit" color="success">
                             update
                         </Button>
 

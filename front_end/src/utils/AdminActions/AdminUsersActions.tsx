@@ -1,10 +1,15 @@
-import { Box, Button, Dialog ,  DialogActions,  DialogContent, DialogTitle, IconButton, TextField, Tooltip } from "@mui/material"
+import { Box, Button, Dialog ,  DialogActions,  DialogContent, DialogTitle, FormControl, IconButton, InputLabel, MenuItem, Select, TextField, ToggleButton, Tooltip, Typography } from "@mui/material"
 import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 import EditIcon from '@mui/icons-material/Edit';
 import { FormEvent, useState } from "react";
 import fetchWithValidation from "../../utils/Api/fetchWithValidation";
 import DialogPopUp from "../../components/popups/DialogPopUp"
 import UserInterface from "../../interfaces/UserInterface";
+import WorkspacePremiumIcon from '@mui/icons-material/WorkspacePremium';
+import { useAppDispatch } from "../../Redux/ReduxHooks";
+import { openSnackBar } from "../../Redux/ReduxPopupSlice";
+
+
 export const AdminUsersActions = (params:any , setRefresh: React.Dispatch<React.SetStateAction<boolean>> ) => {
     
     const user:UserInterface = params.row
@@ -15,6 +20,9 @@ export const AdminUsersActions = (params:any , setRefresh: React.Dispatch<React.
 
     const [openPopupDelete , setOpenPopupDelete] = useState<boolean>(false)
     const [openPopupUpdate , setOpenPopupUpdate] = useState<boolean>(false)
+
+    const dispatch = useAppDispatch();
+
 
     // const handleAddUser = async(e: FormEvent<HTMLFormElement>) => {
     //     e.preventDefault();
@@ -55,11 +63,31 @@ export const AdminUsersActions = (params:any , setRefresh: React.Dispatch<React.
                 credentials: "include"
             });
 
-            if(response.ok) alert("user deleted successfully");
-            else            alert("failed to delete user");
-            
+            if(response.ok){
+
+                setOpenPopupDelete(false)   //close popup when succesfully added, and got statusok
+                setRefresh( old => !old )
+
+                dispatch( openSnackBar({    //open the snackbar alert - successfull
+                    message: 'succesfully deleted user',
+                    severity: 'messageSuccess' ,
+                }))
+
+            } else{
+                
+                dispatch( openSnackBar({   //open the snackbar alert - error
+                    message: 'error deleted user',
+                    severity: 'messageError' ,
+                }))
+            }
+
+
         } catch (error) {
-            console.error("Error deleting user:", error);
+
+            dispatch( openSnackBar({   //open the snackbar alert - error
+                message: 'error deleted user' + error ,
+                severity: 'messageError' ,
+            }))
         }
     }
 
@@ -96,13 +124,6 @@ export const AdminUsersActions = (params:any , setRefresh: React.Dispatch<React.
 
     return(
         <Box>
-            {/* <Tooltip title='view user'>
-
-                <IconButton onClick={ () => {} }>
-                    <VisibilityIcon />
-                </IconButton>
-
-            </Tooltip> */}
 
             <Tooltip title='edit user details'>
 
@@ -122,31 +143,39 @@ export const AdminUsersActions = (params:any , setRefresh: React.Dispatch<React.
 
             <DialogPopUp 
                 open={( openPopupDelete )}
-                title="Delete user from stock"
-                description={`sure u want to delete "${userName}" from the stock?`}
+                title="Delete user from the database"
+                description={`sure u want to delete "${userName}" from the database?`}
                 confirmText = "delete"
-                onConfirm={ handleDeleteUser }
+                onConfirm={ () => handleDeleteUser() }
                 onClose={ () => ( setOpenPopupDelete(false) ) }
             />
 
             <Dialog 
                 open={( openPopupUpdate )}
-                onClose={ () => ( setOpenPopupUpdate(false) ) }    
+                onClose={ () => ( setOpenPopupUpdate(false) ) }  
+                sx={{maxWidth:'100px'}}  
             >
                 <form onSubmit={handleUpdateUser} style={{ marginLeft: '20px', marginRight: '20px' }}>
-                    <DialogTitle>update user from stock</DialogTitle>
-                    
+                    <DialogTitle>update user in the database</DialogTitle>
+                    <br/>
+
                     <DialogContent>                        
-                        <TextField label="user name: "          type="text"     value={userName}    onChange={ (event) => setUserName(event.target.value) } required />
+                        <TextField label="user name: "      type="text"     value={userName}    onChange={ (event) => setUserName(event.target.value) } />
                         
-                        <TextField label="user email: "         type="text"     value={email}       onChange={ (event) => setEmail(event.target.value) } required />
+                        <TextField label="user email: "     type="text"     value={email}       onChange={ (event) => setEmail(event.target.value) } />
                         
-                        <TextField label="is user admin: : "    type="boolean"  value={permissions} onChange={ (event) => setPermissions(Boolean(event.target.value)) } required />
+                        {/* <TextField label="is user admin: "  type="boolean"  value={permissions} onChange={ (event) => setPermissions(Boolean(event.target.value)) } /> */}
+                        <br/>
                         
+                        <Typography>change user perrmissions</Typography>
+                        <ToggleButton aria-label="user permissions" value={permissions} selected={permissions} onChange={ () => setPermissions( (oldPermissions) => !oldPermissions ) } >
+                                <WorkspacePremiumIcon/>
+                        </ToggleButton>
+
                     </DialogContent>
 
                     <DialogActions>
-                        <Button type="submit" color="primary">
+                        <Button type="submit" color="success">
                             update
                         </Button>
 

@@ -1,8 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import {Box,Grid,Typography, Card, CardMedia, CardContent, CardActions, Button , IconButton} from "@mui/material";
-import Product from "../interfaces/ProductInterface"
-import { GetLocalUserName } from '../utils/handleLocalUser'
+import CartItem from "../interfaces/CartItemInterface"
 import { formatProductName } from '../utils/Format'
 import RemoveIcon from '@mui/icons-material/Remove'
 import AddIcon from '@mui/icons-material/Add'
@@ -13,13 +12,12 @@ import RemoveShoppingCartIcon from '@mui/icons-material/RemoveShoppingCart';
 import DialogPopUp from "../components/popups/DialogPopUp"
 import handleValidateFetch from "../utils/Api/fetchWithValidation";
 import { useAppSelector } from "../Redux/ReduxHooks";
-import { setUser } from "../Redux/ReduxUserSlice";
 import CheckoutIcon from '@mui/icons-material/ShoppingCartCheckout';
 
 export default function CartPage(){
     
-    const [itemsList , setItemsList] = useState<Product[]>([]);    
-    const [itemToDelete , setItemToDelete] = useState < Product | null > (null)    //null when the dialog isn't popped up
+    const [itemsList , setItemsList] = useState<CartItem[]>([]);    
+    const [itemToDelete , setItemToDelete] = useState < CartItem | null > (null)    //null when the dialog isn't popped up
     const [clearPopup,setClearPopup] = useState<boolean>(false)   
     const [checkOutPopup,setCheckOutPopup] = useState<boolean>(false)   
 
@@ -52,7 +50,7 @@ export default function CartPage(){
     } , [cartID])//runs every new user, in case of switching users
 
 
-    const handleChangeAmountInCart = ( item:Product , change:number ) => {
+    const handleChangeAmountInCart = ( item:CartItem , change:number ) => {
 
         const updatedAmountInCart = item.AmountInCart + change  //amount in cart after change
         let excededStock = false  //if the amount is more than the stock availble 
@@ -68,7 +66,7 @@ export default function CartPage(){
 
         const final = updatedAmountInCart*( Number(!excededStock) ) + item.ProductStock*( Number(excededStock) )
 
-        const newList = itemsList.map( (prod:Product) => ( ( prod.ProductID === item.ProductID ) ? ( {  ...prod , AmountInCart: final } ) : ( prod ) ) )
+        const newList = itemsList.map( (prod:CartItem) => ( ( prod.ProductID === item.ProductID ) ? ( {  ...prod , AmountInCart: final } ) : ( prod ) ) )
         
         localStorage.setItem(cartID, JSON.stringify(newList))
         setItemsList(newList)

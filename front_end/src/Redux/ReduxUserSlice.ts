@@ -10,7 +10,6 @@ const perm    : boolean       = GetLocalUserPermissions()
 const initialState: UserState = {
     SliceUserName: userName || "unAuthenticated",
     Permissions: perm,
-    LoginPopupOpen: false,
 }
 
 export const userSlice = createSlice({
@@ -37,18 +36,8 @@ export const userSlice = createSlice({
             RemoveLocalUser()
         },
 
-
-        openLoginPopup: (state) => {    //when validate returns unauthorized - popup the login request
-            state.LoginPopupOpen = true
-        },
-
-        closeLoginPopup: (state) => {
-            state.LoginPopupOpen = false
-        },
-        
-
     }
 })
 
-export const { setUser, clearUser, openLoginPopup , closeLoginPopup } = userSlice.actions;
-export default userSlice.reducer;
+export const { setUser, clearUser } = userSlice.actions
+export default userSlice.reducer

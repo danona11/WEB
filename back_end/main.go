@@ -42,7 +42,8 @@ func main() {
 
 	//user controllers:
 	protectedRoutes.POST("/logout", controllers.Logout)
-	protectedRoutes.GET("/users/page/:id", controllers.GetUsers)
+	protectedRoutes.GET("/users/page/:page", controllers.GetUsers)
+	protectedRoutes.DELETE("/deleteUser/:id", controllers.DeleteUser)
 
 
 	//products controllers:

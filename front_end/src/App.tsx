@@ -10,7 +10,7 @@ import ManageProductsPage from './pages/AdminPages/ManageProductsPage';
 import NavBar from './components/NavBar';
 import LoginPopup from "./components/popups/LoginPopup";
 import ReceipsPage from "./pages/ReceipsPage"
-
+import { SnackBar } from "./components/AlertSnackBar"
 
 function NavbarLayout() {
     return ( 
@@ -77,6 +77,7 @@ export default function App() {
 
             {/* global routes: work from any wher in the app*/}
             <LoginPopup />
+            <SnackBar/>
         </BrowserRouter>
     );
 }

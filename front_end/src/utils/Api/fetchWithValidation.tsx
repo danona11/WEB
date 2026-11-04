@@ -1,5 +1,5 @@
 import { ReduxStore } from "../../Redux/ReduxStore"
-import { openLoginPopup  } from "../../Redux/ReduxUserSlice"
+import { openLoginPopup  } from "../../Redux/ReduxPopupSlice"
 
 //check if the back end returns http.StatusUnauthorized - for all fetch requests that require validation
 export default async function fetchWithValidation(input: string | URL | Request, init?: RequestInit | undefined): Promise<Response>{

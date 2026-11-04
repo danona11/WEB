@@ -1,13 +1,15 @@
 import { configureStore } from "@reduxjs/toolkit";
 import UserSlice from './ReduxUserSlice'
+import PopupsSlice from './ReduxPopupSlice'
 
 //contains all slices in global object
 export const ReduxStore = configureStore({
     
     reducer:{
-        
+
         user: UserSlice,
-    
+        popup: PopupsSlice
+
     }
 
 })

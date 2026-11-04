@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import {Box,Button,Grid,Pagination,Stack,Typography, Card , CardMedia, CardContent, CardActions, IconButton} from "@mui/material";
 import AddShoppingCartOutlinedIcon from '@mui/icons-material/AddShoppingCartOutlined';
-import Product from "../interfaces/ProductInterface";
+import CartItem from "../interfaces/CartItemInterface";
 import { formatProductName } from '../utils/Format'
 import RemoveIcon from '@mui/icons-material/Remove'
 import AddIcon from '@mui/icons-material/Add'
@@ -13,10 +13,10 @@ import fetchWithValidation from "../utils/Api/fetchWithValidation";
 
 export default function ProductsPage() {
 
-    const [productsList, setProductsList] = useState<Product[]>([])
+    const [productsList, setProductsList] = useState<CartItem[]>([])
     const [page, setPage] = useState<number>(1)
     const [amountToAdd, setAmountToAdd] = useState<Record<number,number>>({})   //list of all cards in page- each card has { key(prodID): value(amountToAdd) }
-    const [myCartList, setMyCartList ] = useState<Product[]>([])
+    const [myCartList, setMyCartList ] = useState<CartItem[]>([])
     const [maxPage, setMaxPage] = useState<number>(1);
 
     //get the username on every rerender
@@ -70,7 +70,7 @@ export default function ProductsPage() {
         fetchProducts()
     }, [page])  
     
-    const addToCart = (prod:Product) => {
+    const addToCart = (prod:CartItem) => {
         
         const cartID = `${RamUserName}'s_cart`
         const myCart = localStorage.getItem(cartID)
@@ -87,8 +87,8 @@ export default function ProductsPage() {
 
         if( amountToAdd > updatedStock ) amountToAdd = updatedStock
                 
-        const existsIndex = myCartList.findIndex( (exists: Product) => exists.ProductID === prod.ProductID )
-        let updatedCart : Product[] = []
+        const existsIndex = myCartList.findIndex( (exists: CartItem) => exists.ProductID === prod.ProductID )
+        let updatedCart : CartItem[] = []
 
         if ( existsIndex >= 0 ){
                 updatedCart = myCartList.map(
@@ -97,12 +97,16 @@ export default function ProductsPage() {
             updatedCart = [
                 ...myCartList,
                 {
-                    ProductID:      prod.ProductID,
-                    ProductName:    prod.ProductName,
-                    ProductPrice:   prod.ProductPrice,
-                    ProductStock:   prod.ProductStock,
-                    AmountInCart:   amountToAdd,
-                    ProductPhotoURL:prod.ProductPhotoURL
+                    ProductID: prod.ProductID,
+                    ProductName: prod.ProductName,
+                    ProductTeam: prod.ProductTeam,
+                    ProductDesign: prod.ProductDesign,
+                    ProductYear: prod.ProductYear,
+                    ProductPrice: prod.ProductPrice,
+                    ProductStock: prod.ProductStock,
+                    AmountInCart: amountToAdd,
+                    ProductPhotoURL: prod.ProductPhotoURL,
+                    
                 }
             ]
         }

@@ -8,35 +8,39 @@ import { AdminProductsActions } from "../../utils/AdminActions/AdminProductsActi
 export default function ManageProductsPage(){
 
     const [productsList, setProductsList] = useState<Product[]>([])
-    const [refresh, setRefresh] = useState(false)
+    const [refresh, setRefresh] = useState<boolean>(false)
     const [maxRows , setMaxRows] = useState<number>(0)
     const [paginationModel, setPaginationModel ] = useState({page:0,pageSize:6})
 
     useEffect(() => {
-            const fetchProducts = async () => {
-                try {
-                    const responce = await fetchWithValidation(`${import.meta.env.VITE_API_URL}/products/page/${paginationModel.page+1}`,
-                    {
-                        method: "GET",
-                        credentials: "include"
-                    })
-    
-                    if (responce.ok) {
-                        const data = await responce.json()
-                        setProductsList(data.Products)
+        
+        const fetchProducts = async () => {
+            try {
+                const responce = await fetchWithValidation(`${import.meta.env.VITE_API_URL}/products/page/${paginationModel.page+1}`,
+                {
+                    method: "GET",
+                    credentials: "include"
+                })
 
-                        setMaxRows( ( data.MaxPage )*( data.ProductsPerPage ) )
-                    } else {
+                if (responce.ok) {
+                    const data = await responce.json()
+                    
+                    setProductsList(data.Products)
+
+                    setMaxRows( ( data.MaxPage )*( data.ProductsPerPage ) )
+                
+                } else {
+
                     console.log("failed to fetch the users");
-                    }
-    
-                } catch (error) {
-                    console.error("network error", error);
                 }
+
+            } catch (error) {
+                console.error("network error", error);
             }
-    
-            fetchProducts()
-        }, [paginationModel.page , refresh])   //fetch again when page changes, or when refresh- after every admin action
+        }
+
+        fetchProducts()
+    }, [ paginationModel.page , refresh])   //fetch again when page changes, or when refresh- after every admin action
 
         
     const columns = useMemo<GridColDef<Product>[]>( () => [

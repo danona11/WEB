@@ -1,9 +1,8 @@
 import { Box, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
-import LoginPopup from '../components/popups/LoginPopup'
 import { useAppDispatch, useAppSelector } from '../Redux/ReduxHooks'
-import { openLoginPopup } from '../Redux/ReduxUserSlice';
+import { openLoginPopup } from '../Redux/ReduxPopupSlice'
 
 export default function ProtectedRoutes( { children , isAdminRoute = false }: { children: React.ReactNode , isAdminRoute: boolean }) {
     
@@ -19,13 +18,13 @@ export default function ProtectedRoutes( { children , isAdminRoute = false }: { 
     
     useEffect( () => {  //check authorization/athentication on clicking route
 
-        handleVerifyAuth
+        handleVerifyAuth()
     },[])
 
     useEffect( () => {  //check authorization/athentication after login in the popup - in case switched from admin to non admin
         if( ( auth === false ) && ( popup === false ) ){    //so it dosn't run every time popup changes the conditions:   
-            handleVerifyAuth                        //  auth === false => runs only when popup closes, not opens
-        }                                           //  popup === false => so doesn't run but popup hasn't opend yet - popup === false, on mount so will run and ruin popup
+            handleVerifyAuth()                              //  auth === false => runs only when popup closes, not opens
+        }                                                   //  popup === false => so doesn't run but popup hasn't opend yet - popup === false, on mount so will run and ruin popup
     },[popup])
     
     const handleVerifyAuth = async () => {
@@ -48,7 +47,7 @@ export default function ProtectedRoutes( { children , isAdminRoute = false }: { 
         catch(error){
             console.error("Error checking authentication: ", error)
             setAuth(false)
-            dispatch(openLoginPopup())
+            dispatch( openLoginPopup() )
         }
     }
 
