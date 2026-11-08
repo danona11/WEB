@@ -1,11 +1,6 @@
-import Button from '@mui/material/Button';
 import Snackbar, { SnackbarCloseReason } from '@mui/material/Snackbar';
-import IconButton from '@mui/material/IconButton';
-import CloseIcon from '@mui/icons-material/Close';
-import { useEffect, useState } from 'react';
 import { useAppDispatch , useAppSelector } from '../Redux/ReduxHooks';
 import { closeSnackBar, openSnackBar } from '../Redux/ReduxPopupSlice';
-import { stat } from 'node:fs';
 import { Alert } from '@mui/material';
 
 
@@ -31,7 +26,7 @@ export const SnackBar = () => {
             onClose={handleClose}
             anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
         >
-            <Alert onClose={handleClose} severity={ (severity === 'messageError') ? 'error' : 'success'} >
+            <Alert onClose={handleClose} severity={ severity } >
                 {message}
             </Alert>
 

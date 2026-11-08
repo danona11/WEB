@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
-import LoginPage from './pages/LoginPage';
-import SignUpPage from './pages/SignUpPage';
-import PageNotFound from './pages/PageNotFound';
+import LoginPage from './pages/publicPages/LoginPage';
+import SignUpPage from './pages/publicPages/SignUpPage';
+import PageNotFound from './pages/publicPages/PageNotFound';
 import ProductsPage from './pages/ProductsPage';
 import CartPage from './pages/CartPage';
 import ProtectedRoutes from './context/ProtectedRoutes';

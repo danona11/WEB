@@ -23,6 +23,8 @@ export default function CartPage(){
     const [clearPopup,setClearPopup] = useState<boolean>(false)   
     const [checkOutPopup,setCheckOutPopup] = useState<boolean>(false)   
 
+    const dispatch = useAppDispatch()
+
     const {SliceUserName} = useAppSelector( state => state.user )
     const cartID = `${SliceUserName}'s_cart`
 
@@ -42,7 +44,11 @@ export default function CartPage(){
                 setItemsList(cart)
 
             } catch{
-                console.error("parsing the locals storage cart data failed")
+                
+                dispatch( openSnackBar({    //open the snackbar alert - error
+                    message: 'cart empty',
+                    severity: "error" ,
+                }))                
                 setItemsList([])
             } 
         } else{
@@ -58,6 +64,12 @@ export default function CartPage(){
         let excededStock = false  //if the amount is more than the stock availble 
 
         if( updatedAmountInCart <= 0 ){ //if its 0 or below remove from cart
+            
+            dispatch( openSnackBar({    //open the snackbar alert - success
+                message: 'item removed from cart',
+                severity: "success" ,
+            }))
+
             setItemToDelete(item)
             return
         }
@@ -97,7 +109,11 @@ export default function CartPage(){
     const handleCheckOutCart = async() => {
 
         if(itemsList.length === 0){
-            console.log("cart is empty")
+            
+            dispatch( openSnackBar({    //open the snackbar alert - error
+                message: 'cart empty',
+                severity: "error" ,
+            }))
             setCheckOutPopup(false) //close the popup if cart is empty
             return
         }
@@ -126,17 +142,30 @@ export default function CartPage(){
 
                 setCheckOutPopup(false) //close the popup after checkout
 
+                dispatch( openSnackBar({    //open the snackbar alert - success
+                    message: 'checkout successfull, enjoy your new kits',
+                    severity: "success" ,
+                }))
+
                 console.log("checkout successful")
             }
 
             else{
                 console.log("checkout failed")
+                dispatch( openSnackBar({    //open the snackbar alert - error
+                    message: 'error checking-out',
+                    severity: "error" ,
+                }))
                 setCheckOutPopup(false) //close the popup if checkout fails
             }               
         }
         
         catch(error){
             console.error("network error", error)
+            dispatch( openSnackBar({    //open the snackbar alert - error
+                message: 'network error, please try again later',
+                severity: "error" ,
+            }))
             setCheckOutPopup(false) //close the popup if network error
         }
     }

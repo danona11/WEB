@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import {Box,Button,Grid,Pagination,Stack,Typography, Card , CardMedia, CardContent, CardActions, IconButton} from "@mui/material";
+import {Box,Button,Grid,Pagination,Stack,Typography, Card , CardMedia, CardContent, CardActions, IconButton, FormControl, InputLabel, Select, MenuItem} from "@mui/material";
 import AddShoppingCartOutlinedIcon from '@mui/icons-material/AddShoppingCartOutlined';
 import CartItem from "../interfaces/CartItemInterface";
 import { formatProductName } from '../utils/Format'
@@ -18,7 +18,12 @@ export default function ProductsPage() {
     const [page, setPage] = useState<number>(1)
     const [amountToAdd, setAmountToAdd] = useState<Record<number,number>>({})   //list of all cards in page- each card has { key(prodID): value(amountToAdd) }
     const [myCartList, setMyCartList ] = useState<CartItem[]>([])
-    const [maxPage, setMaxPage] = useState<number>(1);
+    const [maxPage, setMaxPage] = useState<number>(1)
+
+    const [productTeams , setProductTeams] = useState<string[]>([])
+    const [productDesigns , setProductDesigns] = useState<string[]>([])
+    const [productYears , setProductYears] = useState<number[]>([])
+
 
     //get the username on every rerender
     //if the user logs out and logs in with another user - the cart will be updated to the new user
@@ -68,8 +73,34 @@ export default function ProductsPage() {
             }
         }
 
+        
         fetchProducts()
     }, [page])  
+
+    useEffect(() => {
+        
+        const fetchCategories = async() => {
+            try {
+                const responce = await fetchWithValidation(`${import.meta.env.VITE_API_URL}/productsCategories`,
+                {
+                    method: "GET",
+                    credentials: "include"
+                })
+                
+                if( responce.ok ){
+                    const data = await responce.json()
+                    setProductTeams( data.ValidTeams )
+                    setProductDesigns( data.ValidDesigns )
+                    setProductYears( data.ValidYears )
+                }
+            
+            }catch(error){
+                console.error(error)
+            }
+        }
+
+        fetchCategories()
+    }, [])
     
     const addToCart = (prod:CartItem) => {
         
@@ -148,6 +179,22 @@ export default function ProductsPage() {
         <Box className="productsPageBox" sx={{ flex:'center' , marginTop: '30px' }}>
             <Typography variant="h2" align="center">Kits page</Typography>
 
+            {/* <FormControl fullWidth>
+                <InputLabel id="demo-simple-select-label">Age</InputLabel>
+                <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    value={age}
+                    label="Age"
+                    onChange={handleChange}
+                >
+                    {}
+                    <MenuItem value={10}>Ten</MenuItem>
+                    <MenuItem value={20}>Twenty</MenuItem>
+                    <MenuItem value={30}>Thirty</MenuItem>
+                </Select>
+            </FormControl> */}
+            
             <Grid container spacing={3} sx={ GridContainerStyle }>
                 {productsList.length > 0 ? (
                     productsList.map( (prod) => {  

@@ -9,3 +9,5 @@ kit_designs :
   -Away 
   -Third 
   -Goalkeeper
+token_name : "Authorization"
+token_max_age : 1800

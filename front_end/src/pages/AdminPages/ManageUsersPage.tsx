@@ -1,18 +1,24 @@
-import {Box,Typography} from "@mui/material";
+import {Box,Button,Typography} from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { FormEvent, useMemo, useState , useEffect} from "react";
 import Users from "../../interfaces/UserInterface"
 import fetchWithValidation from "../../utils/Api/fetchWithValidation";
 import {AdminUsersActions} from "../../utils/AdminActions/AdminUsersActions";
+import { useAppDispatch } from "../../Redux/ReduxHooks";
+import { openSnackBar } from "../../Redux/ReduxPopupSlice";
+import DialogAddUsers from "../../components/popups/DialogAddUser";
 
 
-export default function ManageUsersPage() {
+export default function ManageUsersPage(){
 
     const [usersList, setUsersList] = useState<Users[]>([])
     const [refresh, setRefresh] = useState<boolean>(false)
     const [maxRows , setMaxRows] = useState<number>(0)
     const [paginationModel, setPaginationModel ] = useState({page:0,pageSize:6})
+    const [openAddDiaglog , setOpenAddDiaglog] = useState<boolean>(false)
+    
 
+    const dispatch = useAppDispatch()
 
     useEffect(() => {
 
@@ -30,12 +36,19 @@ export default function ManageUsersPage() {
                     setMaxRows( ( data.MaxPage )*( data.UsersPerPage ) )
 
                 } else {
-
+                    dispatch( openSnackBar({    //open the snackbar alert - successfull
+                        message: 'error loading users',
+                        severity: "error" ,
+                    }))
                     console.log("failed to fetch the users");
                 }
 
             } catch (error) {
-                console.error("network error", error);
+                console.error("network error", error)
+                dispatch( openSnackBar({    //open the snackbar alert - successfull
+                    message: "network error",
+                    severity: "error" ,
+                }))
             }
         }
 
@@ -49,17 +62,20 @@ export default function ManageUsersPage() {
         {field:'Permissions' , headerName: 'is admin' , width:300 , type:'boolean' ,editable:true},
         {field:'Email' , headerName: 'email' , width:300 },
         {field:'RegisterDate' , headerName: 'date first joined' , width:300, type:'dateTime' , valueGetter:( (date) => (!date) ? null : new Date(date) ) },
-        {field: 'actions' , headerName: 'actions' , type:'actions' , width:300 ,sortable: false, editable: false , renderCell:( (params) => AdminUsersActions(params, setRefresh))},
+        {field: 'actions' , headerName: 'actions' , type:'actions' , width:200 ,sortable: false, editable: false , renderCell:( (params) => AdminUsersActions(params, setRefresh))},
     ], [] )
     
 
     return (
-        <Box className="manage-users-page" sx={{ height:450,width:'100%', textAlign: 'center', marginTop: '50px'}}>
-                        
+        <Box className="manage-users-page" sx={{ height:430,width:'100%', textAlign: 'center', marginTop: '50px'}}>
+
             <Typography variant='h4' component='h4' sx={{textAlign:'center' , mt:3 , mb:3}}>
                 manage products - admin only
             </Typography>
-                
+
+            <Button align-self="flex-left" variant="contained" onClick={ () => setOpenAddDiaglog(true) }>ADD User</Button>
+            <DialogAddUsers open={openAddDiaglog} onClose={ ()=> setOpenAddDiaglog(false) } setRefresh={setRefresh} />
+
             <DataGrid 
                 rows={usersList} 
                 columns={columns} 

@@ -126,7 +126,7 @@ export const AdminUsersActions = (params:any , setRefresh: React.Dispatch<React.
         <Box>
 
             <Tooltip title='edit user details'>
-
+        
                 <IconButton onClick={ () => {setOpenPopupUpdate(true)} }>
                     <EditIcon />
                 </IconButton>

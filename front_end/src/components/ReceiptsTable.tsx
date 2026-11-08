@@ -14,7 +14,7 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 
 
-export default function Row(props: { row: ReceiptsList }) {
+export default function Row( props: { row: ReceiptsList }) {
     
     const { row } = props
     const [open, setOpen] = useState(false)

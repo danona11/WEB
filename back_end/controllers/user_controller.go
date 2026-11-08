@@ -105,7 +105,7 @@ func SendLogin(ctx *gin.Context) {
 
 	//packs the token into a cookie - which the browser will attach to every request
 	ctx.SetSameSite(http.SameSiteLaxMode)
-	ctx.SetCookie("Authorization", tokenString, 1800, "/", "", false, true) //30 minutes, httponly - onlye the browser and the server can read
+	ctx.SetCookie( viper.GetString("token_name") , tokenString , viper.GetInt("token_max_age") , "/", "", false, true) //30 minutes, httponly - onlye the browser and the server can read
 
 	var userResponse = dto.LoginResponse{
 		UserName: login_user.UserName ,

@@ -103,14 +103,6 @@ export const AdminProductsActions = ( params:any , setRefresh: React.Dispatch<Re
 
     return(
         <Box>
-            {/* <Tooltip title='view product'>
-
-                <IconButton onClick={ () => {} }>
-                    <VisibilityIcon />
-                </IconButton>
-
-            </Tooltip> */}
-
             <Tooltip title='edit product details'>
 
                 <IconButton onClick={ () => {setOpenPopupUpdate(true)} }>

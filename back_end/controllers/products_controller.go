@@ -156,7 +156,6 @@ func DeleteProduct(ctx *gin.Context) {
 	ctx.JSON(200, gin.H{"message": "successfully deleted product"})
 }
 
-
 func GetProductValidFields(ctx *gin.Context){
 	
 	var ValidTeams []string 
@@ -167,4 +166,10 @@ func GetProductValidFields(ctx *gin.Context){
 		"ValidDesigns": utils.ValidDesigns ,
 		"ValidYears" : utils.ValidDesigns,
 	})
+}
+
+func GetProductsFilter(ctx *gin.Context){
+
+
+
 }

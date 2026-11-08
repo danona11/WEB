@@ -4,9 +4,9 @@ import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import { Typography } from "@mui/material";
 import { Button } from "@mui/material";
-import DebouncedTextField from "../components/DebouncedTextField"
-import { useAppDispatch } from "../Redux/ReduxHooks";
-import { openSnackBar } from "../Redux/ReduxPopupSlice";
+import DebouncedTextField from "../../components/DebouncedTextField"
+import { useAppDispatch } from "../../Redux/ReduxHooks";
+import { openSnackBar } from "../../Redux/ReduxPopupSlice";
 
 
 export default function SignUpPage() {

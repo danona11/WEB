@@ -1,11 +1,11 @@
 import {  useNavigate } from "react-router-dom";
 import { FormEvent, useEffect, useState } from "react";
 import { Button } from "@mui/material";
-import DebouncedTextField from "../components/DebouncedTextField"
+import DebouncedTextField from "../../components/DebouncedTextField"
 import { Typography } from "@mui/material";
-import { clearUser, setUser } from "../Redux/ReduxUserSlice";
-import { useAppDispatch } from "../Redux/ReduxHooks";
-import { openSnackBar } from "../Redux/ReduxPopupSlice";
+import { clearUser, setUser } from "../../Redux/ReduxUserSlice";
+import { useAppDispatch } from "../../Redux/ReduxHooks";
+import { openSnackBar } from "../../Redux/ReduxPopupSlice";
 
 export default function LoginPage() {
     
