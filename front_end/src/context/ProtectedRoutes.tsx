@@ -10,8 +10,7 @@ export default function ProtectedRoutes( { children , isAdminRoute = false }: { 
     const [permissions , setPermissions ] = useState<boolean | null>(null);
 
     const dispatch = useAppDispatch()   
-    const popup:boolean = useAppSelector( (state:any) => state.user.LoginPopupOpen )  //the current state of LoginPopupOpen
-
+    const popup:boolean = useAppSelector( (state:any) => state.popup.LoginPopupOpen )  //the current state of LoginPopupOpen
 
 //when user makes request check validate(on mount), 
 //and when the login popup closes so if he is a different user now, want to check authorization again
@@ -51,14 +50,13 @@ export default function ProtectedRoutes( { children , isAdminRoute = false }: { 
         }
     }
 
-    //for when the backend is still checking if the user is authenticated/authorized or not - 
-    //so it doesn't kick out until the responce from the server:
-    if ( ( auth === null ) || ( (isAdminRoute) && (permissions === null) ) ) {
-        
+    //while the user authentication or authorized when the page is for admins are loading
+    if ( ( auth === null ) || ( auth === true && ( (isAdminRoute) && (permissions === null) ) )) {
+         
         return <Typography variant='h3'>Loading...</Typography>
     }    
     
-    //if the user is not authenticated, open loginPopup
+    //if the user is not authenticated - loginPopup is open
     if (auth === false) {
         return( //keep the backround page alive, while the popup is open: (children is the backround page comp')
             

@@ -8,7 +8,7 @@ export const ReduxStore = configureStore({
     reducer:{
 
         user: UserSlice,
-        popup: PopupsSlice
+        popup: PopupsSlice,
 
     }
 

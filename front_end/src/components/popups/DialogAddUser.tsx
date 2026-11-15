@@ -4,18 +4,12 @@ import { FormEvent, useState } from "react";
 import fetchWithValidation from "../../utils/Api/fetchWithValidation";
 import { useAppDispatch } from "../../Redux/ReduxHooks";
 import { openSnackBar } from "../../Redux/ReduxPopupSlice";
-import { HTMLFormMethod } from "react-router-dom";
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff'
+import AddDialogInterface from "../../interfaces/DialogInterface";
 
-interface DialogAddUsersInterface {
 
-    open: boolean
-    onClose: ( () => void )
-    setRefresh: React.Dispatch<React.SetStateAction<boolean>>
-}
-
-export default function DialogAddUsers( props:DialogAddUsersInterface ){           
+export default function DialogAddUsers( props:AddDialogInterface ){           
       
     const [userName , setUserName] = useState<string>("")
     const [email , setEmail] = useState<string>("")

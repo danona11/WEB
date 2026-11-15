@@ -46,13 +46,13 @@ export default function ManageProductsPage(){
     const columns = useMemo<GridColDef<Product>[]>( () => [
 
         { field: 'ProductID' , headerName: 'id' , width:50 },
-        { field: 'ProductPhotoURL', headerName: 'view', width: 70, sortable: false , editable: false , renderCell:( (params) => ( <Avatar variant='square' src={params.row.ProductPhotoURL}/> ) ) },
-        { field: 'ProductName', headerName: 'shirt info', width: 300, editable: true },
+        { field: 'ProductPhotoURL', headerName: 'view', width: 60, sortable: false , editable: false , renderCell:( (params) => ( <Avatar variant='square' src={params.row.ProductPhotoURL}/> ) ) },
         { field: 'ProductTeam', headerName: 'kit team', width: 200, editable: true },
         { field: 'ProductDesign', headerName: 'kit design', width: 200, editable: true },
-        { field: 'ProductPrice', headerName: 'price', width: 200, editable: true , renderCell:( (params) => `${params.row.ProductPrice.toFixed(2)} ILS` )},    
-        { field: 'ProductStock', headerName: 'stock', width: 200, editable: true },
-        { field: 'actions' , headerName: 'actions' , type:'actions' , width:250 ,sortable: false, editable: false , renderCell:( (params) => AdminProductsActions(params, setRefresh))},
+        { field: 'ProductYear', headerName: 'kit year', width: 150, editable: true },
+        { field: 'ProductPrice', headerName: 'price', width: 150, editable: true , renderCell:( (params) => `${params.row.ProductPrice.toFixed(2)} ILS` )},    
+        { field: 'ProductStock', headerName: 'stock', width: 150, editable: true },
+        { field: 'actions' , headerName: 'actions' , type:'actions' , width:210 ,sortable: false, editable: false , renderCell:( (params) => AdminProductsActions(params, setRefresh))},
 
     ], [] )
 
