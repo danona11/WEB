@@ -4,7 +4,7 @@ import (
 	"errors"
 	"my-project/dto/ReceiptsDto"
 	"my-project/initializers"
-	"my-project/modules"
+	models "my-project/models"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -19,7 +19,7 @@ func CreateReceipt(ctx *gin.Context) {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "user unauthorized"})
 		return
 	}
-	var user modules.User = userInfo.(modules.User)
+	var user models.User = userInfo.(models.User)
 
 	var cartList []dto.CheckoutItemRequest
 	errBind := ctx.Bind(&cartList)
@@ -34,7 +34,7 @@ func CreateReceipt(ctx *gin.Context) {
 			
 			var recSumPrice float64 = 0
 
-			newRec := modules.Receipt{
+			newRec := models.Receipt{
 				UserID: user.UserID, 
 				SumPrice: recSumPrice,
 			}
@@ -45,7 +45,7 @@ func CreateReceipt(ctx *gin.Context) {
 
 			for _, cartItem := range cartList {
 
-				var prod modules.Product
+				var prod models.Product
 
 				errFirst := trCtx.First(&prod, cartItem.ProductID).Error
 				if errFirst != nil {
@@ -62,7 +62,7 @@ func CreateReceipt(ctx *gin.Context) {
 					return errSave													//rollback
 				}
 
-				newRecProd := modules.ReceiptProducts{
+				newRecProd := models.ReceiptProducts{
 					ReceiptID:     newRec.ReceiptID,
 					ProductID:     prod.ProductID,
 					AmountInCart: cartItem.AmountInCart,
@@ -104,9 +104,9 @@ func GetUsersReceipts(ctx *gin.Context) {
 		return
 	}
 
-	var user modules.User = userInfo.(modules.User)
+	var user models.User = userInfo.(models.User)
 
-	var receipts []modules.Receipt
+	var receipts []models.Receipt
 
 //gorm automatically queries the receipts, grabs their line items, and fetches the product details for each item in one clean operation.
 	err := initializers.DB_ptr.

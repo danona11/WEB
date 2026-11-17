@@ -3,7 +3,7 @@ import LoginPage from './pages/publicPages/LoginPage';
 import SignUpPage from './pages/publicPages/SignUpPage';
 import PageNotFound from './pages/publicPages/PageNotFound';
 import ProductsPage from './pages/ProductsPage';
-import CartPage from './pages/CartPage';
+import CartPage from './pages/cart/CartPage';
 import ProtectedRoutes from './context/ProtectedRoutes';
 import ManageUsersPage from './pages/AdminPages/ManageUsersPage';
 import ManageProductsPage from './pages/AdminPages/ManageProductsPage';

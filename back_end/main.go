@@ -50,9 +50,10 @@ func main() {
 	protectedRoutes.POST("/addProduct", controllers.CreateProduct)
 	protectedRoutes.PUT("/updateProduct/:id", controllers.UpdateProduct)
 	protectedRoutes.DELETE("/deleteProduct/:id", controllers.DeleteProduct)
-	protectedRoutes.GET("/products", controllers.GetProducts)
-	protectedRoutes.GET("/products/page/:page", controllers.GetProducts)
-	protectedRoutes.GET("/product/:id", controllers.SearchProduct)
+	protectedRoutes.GET("/products", controllers.GetProductsPagination)
+	protectedRoutes.GET("/products/page/:page", controllers.GetProductsPagination)
+	protectedRoutes.GET("/productById/:id", controllers.SearchProductByID)
+	protectedRoutes.GET("/productsByName/:name", controllers.SearchProductByName)
 
 
 	//receipts controllers:

@@ -5,7 +5,7 @@ import (
 	//"fmt"
 	//"strconv"
 	"my-project/initializers"
-	"my-project/modules"
+	"my-project/models"
 	"net/http"
 	"os"
 	"time"
@@ -19,7 +19,7 @@ import (
 
 func GetUsers(ctx *gin.Context){ //gin.context = all the info about the request
 
-	var users_list []modules.User
+	var users_list []models.User
 	var usersPerPage int = viper.GetInt("pagination_per_page") //get the const number of kits per page from the config file
 
 	pageString := ctx.Param("page") //take the page from the url
@@ -29,7 +29,7 @@ func GetUsers(ctx *gin.Context){ //gin.context = all the info about the request
     }
 		
 	var totalUsers int64
-	initializers.DB_ptr.Model(&modules.User{}).Count(&totalUsers)	//total useructs in the DB
+	initializers.DB_ptr.Model(&models.User{}).Count(&totalUsers)	//total useructs in the DB
 	
 	offset := (page - 1) * usersPerPage	//the first user in the page
 
@@ -73,7 +73,7 @@ func SendLogin(ctx *gin.Context) {
 		return
 	}
 
-	var login_user modules.User
+	var login_user models.User
 
 	//select * from users where user_name = login_input.user_name , First - will stop searching when found 1
 	found := initializers.DB_ptr.First(&login_user, "user_name = ?", login_input.UserName)
@@ -117,7 +117,7 @@ func SendLogin(ctx *gin.Context) {
 
 func SendSignUp(ctx *gin.Context) {
 
-	var userDetails modules.User
+	var userDetails models.User
 
 	err := ctx.Bind(&userDetails)
 	if err != nil { //couldnt bind into userDetails
@@ -126,7 +126,7 @@ func SendSignUp(ctx *gin.Context) {
 	}
 
 	found := initializers.DB_ptr.First(&userDetails, "user_name = ?", userDetails.UserName)
-	if found != nil{
+	if found == nil{
 		ctx.JSON(http.StatusConflict, gin.H{"error": "username already exists"})
 		return
 	}
@@ -138,7 +138,7 @@ func SendSignUp(ctx *gin.Context) {
 		return
 	}
 
-	newUser := modules.User{
+	newUser := models.User{
 		UserName: userDetails.UserName,
 		Email:    userDetails.Email,
 		Password: string(hash),
@@ -165,7 +165,7 @@ func Validate(ctx *gin.Context) {
 	}
 
 	//from gin user type to DB user type:
-	user := userData.(modules.User)
+	user := userData.(models.User)
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"UserName":    user.UserName,
@@ -186,10 +186,10 @@ func UpdateUser(ctx *gin.Context) {
 	//getting the user id off the URL:
 	user_id := ctx.Param("id")
 
-	var upd_user modules.User	//the updated fields
+	var upd_user models.User	//the updated fields
 	ctx.Bind(&upd_user)
 	
-	var old_user modules.User
+	var old_user models.User
 
 	//select user from where id = user_id:
 	result := initializers.DB_ptr.First(&old_user, user_id)
@@ -198,7 +198,7 @@ func UpdateUser(ctx *gin.Context) {
 		return
 	}
 
-	initializers.DB_ptr.Model(&old_user).Updates(modules.User{
+	initializers.DB_ptr.Model(&old_user).Updates(models.User{
 			
 		UserName:		upd_user.UserName,
 		Email:			upd_user.Email,
@@ -212,7 +212,7 @@ func DeleteUser(ctx *gin.Context) {
 	//getting the user id off the URL:
 	userID := ctx.Param("id")
 
-	result := initializers.DB_ptr.Delete(&modules.User{}, userID)
+	result := initializers.DB_ptr.Delete(&models.User{}, userID)
 	if result.Error != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "couldnt find user to delete"})
 		return
@@ -223,7 +223,7 @@ func DeleteUser(ctx *gin.Context) {
 
 /*
 func CreateUser(ctx *gin.Context) {
-	var newUser modules.postgersStructures.User
+	var newUser models.postgersStructures.User
 
 	err := ctx.BindJSON(&newUser)
 	if err != nil {
@@ -242,9 +242,9 @@ func CreateUser(ctx *gin.Context) {
 	ctx.IndentedJSON(http.StatusCreated, newUser)
 }
 
-func GetUserById(id uint) (*modules.postgersStructures.User, error) {
+func GetUserById(id uint) (*models.postgersStructures.User, error) {
 
-	var users_list []modules.postgersStructures.User
+	var users_list []models.postgersStructures.User
 
 	//select * from users => into a list(users_list)
 	result := initializers.DB_ptr.Find(&users_list)

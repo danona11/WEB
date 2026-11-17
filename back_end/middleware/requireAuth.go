@@ -2,7 +2,7 @@ package middleware
 
 import (
 	"my-project/initializers"
-	"my-project/modules"
+	"my-project/models"
 	"net/http"
 	"os"
 
@@ -42,7 +42,7 @@ func RequireAuth(ctx *gin.Context) {
 	if ok && token.Valid {
 
 		//find the user with token claims -subject(incase he was deleted from the DB):
-		var user modules.User
+		var user models.User
 		initializers.DB_ptr.First(&user, claims["subject"])
 
 		if user.UserID == 0 {

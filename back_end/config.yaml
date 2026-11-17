@@ -2,6 +2,7 @@
 app_name : "Football kits"
 default_kit_image : "https://i.pinimg.com/736x/74/49/9f/74499f7623bbe946867f791f863a4f87.jpg"
 pagination_per_page : 6
+limit_products_search : 5
 max_kit_year : 2026
 min_kit_year : 2020
 kit_designs : 

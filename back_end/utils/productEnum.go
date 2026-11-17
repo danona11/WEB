@@ -3,7 +3,7 @@ import 	(
     "github.com/spf13/viper"
 )
 
-var MaxYear int = viper.GetInt("max_kit_year")  
+var MaxYear int = viper.GetInt("max_kit_year")
 var MinYear int = viper.GetInt("min_kit_year")
 
 var ValidDesigns []string = viper.GetStringSlice("kit_designs")
