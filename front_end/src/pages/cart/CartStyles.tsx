@@ -1,5 +1,5 @@
 import { SxProps, Theme } from "@mui/material"
-import { ProductCardStyle } from "../../styles/CardStyle"
+import { ProductCardStyle } from "../../globalStyles/CardStyle"
 import { OutOfStockColor } from "./CartConstants"
 
 export const pageBoxSx:SxProps<Theme> = { padding: "30px", position: "relative" }

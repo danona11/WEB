@@ -1,16 +1,16 @@
-import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import {Box,Button,Grid,Pagination,Stack,Typography, Card , CardMedia, CardContent, CardActions, IconButton, FormControl, InputLabel, Select, MenuItem} from "@mui/material";
 import AddShoppingCartOutlinedIcon from '@mui/icons-material/AddShoppingCartOutlined';
-import CartItem from "../interfaces/CartItemInterface";
-import { formatProductName } from '../utils/Format'
+import CartItem from "../../interfaces/CartItemInterface";
+import { formatProductName } from '../../utils/Format'
 import RemoveIcon from '@mui/icons-material/Remove'
 import AddIcon from '@mui/icons-material/Add'
-import { ProductCardStyle } from "../styles/CardStyle";
-import { GridContainerStyle } from "../styles/GridStyle";
-import { useAppSelector, useAppDispatch } from "../Redux/ReduxHooks";
-import fetchWithValidation from "../utils/Api/fetchWithValidation";
-import { openSnackBar } from "../Redux/ReduxPopupSlice";
+import { ProductCardStyle } from "../../globalStyles/CardStyle";
+import { GridContainerStyle } from "../../globalStyles/GridStyle";
+import { useAppSelector, useAppDispatch } from "../../Redux/ReduxHooks";
+import fetchWithValidation from "../../utils/Api/fetchWithValidation";
+import { openSnackBar } from "../../Redux/ReduxPopupSlice";
+import SearchBar from "../../components/searchBar/SearchBar";
 
 export default function ProductsPage() {
 
@@ -24,12 +24,9 @@ export default function ProductsPage() {
     const [productDesigns , setProductDesigns] = useState<string[]>([])
     const [productYears , setProductYears] = useState<number[]>([])
 
-
     //get the username on every rerender
     //if the user logs out and logs in with another user - the cart will be updated to the new user
     const RamUserName = useAppSelector( (state) => state.user.SliceUserName )
-
-    const nav = useNavigate();
 
     useEffect(() => {
         const cartID = `${RamUserName}'s_cart`
@@ -105,7 +102,6 @@ export default function ProductsPage() {
     const addToCart = (prod:CartItem) => {
         
         const cartID = `${RamUserName}'s_cart`
-        const myCart = localStorage.getItem(cartID)
 
         const amountInCart = AmountInCartByID(prod.ProductID)
 
@@ -151,7 +147,7 @@ export default function ProductsPage() {
         setAmountToAdd( (old) => ({ ...old , [prod.ProductID]:1 }) )
     }
     
-    const handlePageChange = (event:React.ChangeEvent<unknown> , value:number) =>{
+    const handlePageChange = ( event:React.ChangeEvent<unknown> , value:number) =>{
         setPage(value)
     }  
     
@@ -177,23 +173,8 @@ export default function ProductsPage() {
 
     return (
         <Box className="productsPageBox" sx={{ flex:'center' , marginTop: '30px' }}>
-            <Typography variant="h2" align="center">Kits page</Typography>
 
-            {/* <FormControl fullWidth>
-                <InputLabel id="demo-simple-select-label">Age</InputLabel>
-                <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    value={age}
-                    label="Age"
-                    onChange={handleChange}
-                >
-                    {}
-                    <MenuItem value={10}>Ten</MenuItem>
-                    <MenuItem value={20}>Twenty</MenuItem>
-                    <MenuItem value={30}>Thirty</MenuItem>
-                </Select>
-            </FormControl> */}
+            <SearchBar />
             
             <Grid container spacing={3} sx={ GridContainerStyle }>
                 {productsList.length > 0 ? (

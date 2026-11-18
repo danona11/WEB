@@ -100,9 +100,8 @@ func SearchProductByID(ctx *gin.Context) {
 	}
 
 	var prod models.Product
-
 	//will show the first product that meets the search conditions:
-	result := initializers.DB_ptr.Model(&models.Product{ProductID: uint(prod_id)}).First(&prod)
+	result := initializers.DB_ptr.Where("product_id = ?", prod_id).First(&prod)
 	if result.Error != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "failed to fetch products"})
 		return
@@ -118,8 +117,8 @@ func SearchProductByName(ctx *gin.Context) {
 
 	var prodsList []models.Product
 
-	//will show all the products that have that string:
-	result := initializers.DB_ptr.Where("name LIKE ?", "%"+prodName+"%").Limit(viper.GetInt("limit_products_search")).Find(&prodsList)
+	//will show all the products that have that string: (ilike = not case sensetive)
+	result := initializers.DB_ptr.Where("product_name ILIKE ?", "%"+prodName+"%").Limit(viper.GetInt("pagination_per_page")).Find(&prodsList)
 	if result.Error != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "failed to fetch products"})
 		return

@@ -2,14 +2,14 @@ import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
 import LoginPage from './pages/publicPages/LoginPage';
 import SignUpPage from './pages/publicPages/SignUpPage';
 import PageNotFound from './pages/publicPages/PageNotFound';
-import ProductsPage from './pages/ProductsPage';
+import ProductsPage from './pages/products/ProductsPage';
 import CartPage from './pages/cart/CartPage';
 import ProtectedRoutes from './context/ProtectedRoutes';
 import ManageUsersPage from './pages/AdminPages/ManageUsersPage';
 import ManageProductsPage from './pages/AdminPages/ManageProductsPage';
 import NavBar from './components/NavBar';
 import LoginPopup from "./components/popups/LoginPopup";
-import ReceipsPage from "./pages/ReceipsPage"
+import ReceipsPage from "./pages/receipts/ReceipsPage"
 import { SnackBar } from "./components/AlertSnackBar"
 
 function NavbarLayout() {

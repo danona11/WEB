@@ -1,4 +1,3 @@
-import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import {Box,Grid,Typography, Card, CardMedia, CardContent, CardActions, Button , IconButton} from "@mui/material";
 import CartItem from "../../interfaces/CartItemInterface"
@@ -6,11 +5,10 @@ import { formatProductName } from '../../utils/Format'
 import RemoveIcon from '@mui/icons-material/Remove'
 import AddIcon from '@mui/icons-material/Add'
 import DeleteIcon from '@mui/icons-material/Delete'
-import { ProductCardStyle } from "../../styles/CardStyle";
-import { GridContainerStyle } from "../../styles/GridStyle";
+import { ProductCardStyle } from "../../globalStyles/CardStyle";
+import { GridContainerStyle } from "../../globalStyles/GridStyle";
 import RemoveShoppingCartIcon from '@mui/icons-material/RemoveShoppingCart';
 import DialogPopUp from "../../components/popups/DialogPopUp"
-import handleValidateFetch from "../../utils/Api/fetchWithValidation";
 import { useAppSelector } from "../../Redux/ReduxHooks";
 import CheckoutIcon from '@mui/icons-material/ShoppingCartCheckout';
 import { useAppDispatch } from "../../Redux/ReduxHooks";
@@ -40,8 +38,8 @@ export default function CartPage(){
 
     useEffect( () =>{
         
-        const myCart = localStorage.getItem(cartID)
-        
+        const myCart = localStorage.getItem(cartID);
+            
         if(myCart){
             try{
                 const cart = JSON.parse(myCart)
@@ -107,7 +105,11 @@ export default function CartPage(){
         setItemsList( [] )
         localStorage.removeItem(cartID) 
         setClearPopup(false) //REMOVE clearPOPuP AFTER CART GETS CLEARED
-
+        
+        dispatch( openSnackBar({    //open the snackbar alert - success
+            message: 'cart cleared',
+            severity: "success" ,
+        }))
     }
 
     const handleCheckOutCart = async() => {
