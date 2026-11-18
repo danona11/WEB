@@ -12,6 +12,7 @@ import fetchWithValidation from "../../utils/Api/fetchWithValidation";
 import { openSnackBar } from "../../Redux/ReduxPopupSlice";
 import SearchBar from "../../components/searchBar/SearchBar";
 
+
 export default function ProductsPage() {
 
     const [productsList, setProductsList] = useState<CartItem[]>([])
@@ -24,6 +25,8 @@ export default function ProductsPage() {
     const [productDesigns , setProductDesigns] = useState<string[]>([])
     const [productYears , setProductYears] = useState<number[]>([])
 
+    const [isSearching , setIsSearching] = useState<Boolean>(false)
+    
     //get the username on every rerender
     //if the user logs out and logs in with another user - the cart will be updated to the new user
     const RamUserName = useAppSelector( (state) => state.user.SliceUserName )
@@ -51,6 +54,8 @@ export default function ProductsPage() {
 
 
     useEffect(() => {
+        if(isSearching) return  //so that the search results don't get runover by a new fetch
+
         const fetchProducts = async () => {
             try {
                 const responce = await fetchWithValidation(`${import.meta.env.VITE_API_URL}/products/page/${page}`,
@@ -72,7 +77,7 @@ export default function ProductsPage() {
 
         
         fetchProducts()
-    }, [page])  
+    }, [page , isSearching ])//if the user is done searching, run again  
 
     useEffect(() => {
         
@@ -171,11 +176,24 @@ export default function ProductsPage() {
         )
     }
 
+    const showSearch = ( searchProdsList: CartItem[] | null ) => {
+        
+        if( searchProdsList !== null ){
+            
+            setIsSearching(true)
+            setProductsList(searchProdsList)
+        
+        }else{
+            setIsSearching(false)
+        }
+    }
+
+
     return (
         <Box className="productsPageBox" sx={{ flex:'center' , marginTop: '30px' }}>
 
-            <SearchBar />
-            
+            { SearchBar(showSearch) }
+
             <Grid container spacing={3} sx={ GridContainerStyle }>
                 {productsList.length > 0 ? (
                     productsList.map( (prod) => {  
